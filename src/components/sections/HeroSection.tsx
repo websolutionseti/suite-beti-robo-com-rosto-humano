@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, BarChart3, FileText } from "lucide-react";
-import betiHero from "@/assets/beti-hero.jpg";
+import betiHero from "@/imagem/beti-hero.jpg";
 const HeroSection = () => {
   const whatsappUrl = "https://wa.me/5512991528871?text=Ol%C3%A1%2C%20quero%20conhecer%20a%20Su%C3%ADte%20BETI%20e%20falar%20com%20o%20CCO";
   const briefingUrl = "https://websolutions.eti.br/briefing";
@@ -11,7 +11,7 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
-          <div className="text-center lg:text-left text-white space-y-8">
+          <div className="text-center lg:text-left text-white space-y-8 animate-slide-in-left">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
                 Suíte BETI
@@ -82,7 +82,7 @@ const HeroSection = () => {
           </div>
 
           {/* Hero Image */}
-          <div className="relative">
+          <div className="relative animate-slide-in-right">
             <div className="relative overflow-hidden rounded-2xl shadow-2xl">
               <img src={betiHero} alt="BETI - Assistente digital inteligente da Web Solutions ETI" className="w-full h-auto animate-float" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>

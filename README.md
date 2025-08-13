@@ -1,73 +1,212 @@
-# Welcome to your Lovable project
+# 🤖 Suíte BETI - Atendimento Inteligente com Rosto Humano
 
-## Project info
+> **Automação estratégica com empatia, tecnologia e resultados mensuráveis**
 
-**URL**: https://lovable.dev/projects/366ad5e4-319f-40f1-8072-3d80af01f580
+## 📋 Sobre o Projeto
 
-## How can I edit this code?
+A **Suíte BETI** é uma solução completa de atendimento automatizado que combina inteligência artificial com estratégias comerciais comprovadas. Mais que um chatbot, é uma agente digital estratégica que revoluciona o atendimento ao cliente.
 
-There are several ways of editing your application.
+### 🎯 Principais Resultados
+- ✅ **+150% em conversões**
+- ✅ **-50% em custos operacionais**
+- ✅ **Disponibilidade 24/7**
+- ✅ **ROI em até 3 meses**
 
-**Use Lovable**
+## 🚀 Funcionalidades
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/366ad5e4-319f-40f1-8072-3d80af01f580) and start prompting.
+### 🧠 Inteligência e Empatia
+- **Atendimento Humanizado**: Tecnologia com toque humano e linguagem natural
+- **Scripts Adaptativos**: Personalização automática baseada no perfil do cliente
+- **SPIN Selling**: Metodologia estratégica para qualificar leads efetivamente
 
-Changes made via Lovable will be committed automatically to this repo.
+### ⚙️ Integração e Conectividade
+- **CRM Integrado**: Conexão com principais plataformas
+- **E-commerce**: Integração total com lojas virtuais
+- **Redes Sociais**: WhatsApp, Instagram, Facebook
+- **Landing Pages**: Captura e qualificação de leads
 
-**Use your preferred IDE**
+### 📊 Dados e Insights
+- **Analytics Avançado**: Transforma interações em insights estratégicos
+- **Relatórios em Tempo Real**: Métricas de conversão e performance
+- **Dashboards Personalizados**: Visualização de resultados
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Tecnologias Utilizadas
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Build Tool**: Vite
+- **UI Components**: shadcn/ui, Radix UI
+- **Ícones**: Lucide React
+- **Roteamento**: React Router DOM
+- **Estado**: React Query
+- **Acessibilidade**: ARIA, WCAG 2.1 AA
 
-Follow these steps:
+## ♿ Acessibilidade
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Este projeto foi desenvolvido seguindo as diretrizes **WCAG 2.1 AA** e inclui:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- 🎯 **Navegação por teclado** completa
+- 🔍 **Suporte a leitores de tela**
+- 🎨 **Contraste personalizado** (Normal, Alto, Escuro)
+- 📏 **Tamanho de fonte ajustável** (12px - 24px)
+- 🎬 **Controle de animações** (respeita `prefers-reduced-motion`)
+- 📢 **Anúncios automáticos** para mudanças de estado
+- ⏭️ **Skip links** para navegação rápida
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Menu de Acessibilidade
+Menu flutuante disponível nas seções principais com:
+- Ajuste de tamanho da fonte
+- Alteração de contraste
+- Controle de animações
+- Configuração de anúncios
+- Reset de configurações
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+## 📱 Responsividade
+
+Design **mobile-first** com breakpoints otimizados:
+- 📱 **Mobile**: < 768px
+- 📲 **Tablet**: 768px - 1024px
+- 💻 **Desktop**: > 1024px
+
+## 🎨 Design System
+
+### Cores Principais
+```css
+--primary: 220 100% 50%;          /* Azul principal */
+--success: 142 76% 36%;           /* Verde conversão */
+--accent: 280 100% 70%;           /* Roxo destaque */
+--foreground: 222 84% 5%;         /* Texto principal */
 ```
 
-**Edit a file directly in GitHub**
+### Gradientes
+- **Hero**: Linear gradient com cores primárias
+- **Success**: Gradiente verde para CTAs de conversão
+- **Card**: Gradiente sutil para elementos de destaque
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📂 Estrutura do Projeto
 
-**Use GitHub Codespaces**
+```
+src/
+├── a11y/                    # Recursos de acessibilidade
+│   ├── AccessibilityProvider.tsx
+│   ├── AccessibilityMenu.tsx
+│   ├── SkipLink.tsx
+│   └── ScreenReaderOnly.tsx
+├── components/
+│   ├── sections/           # Seções da landing page
+│   │   ├── HeroSection.tsx
+│   │   ├── ProblemSection.tsx
+│   │   ├── SolutionSection.tsx
+│   │   ├── BenefitsSection.tsx
+│   │   ├── PricingSection.tsx
+│   │   ├── CtaSection.tsx
+│   │   └── Footer.tsx
+│   ├── ui/                 # Componentes shadcn/ui
+│   └── FloatingWhatsApp.tsx
+├── imagem/                 # Assets organizados
+│   ├── favicon.png
+│   ├── logo-beti.png
+│   └── beti-hero.jpg
+├── hooks/                  # Custom hooks
+├── lib/                    # Utilitários
+└── pages/                  # Páginas da aplicação
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🚀 Como Executar
 
-## What technologies are used for this project?
+### Pré-requisitos
+- Node.js 18+
+- npm ou yarn
 
-This project is built with:
+### Instalação
+```bash
+# Clone o repositório
+git clone [url-do-repositorio]
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Instale as dependências
+npm install
 
-## How can I deploy this project?
+# Execute em desenvolvimento
+npm run dev
 
-Simply open [Lovable](https://lovable.dev/projects/366ad5e4-319f-40f1-8072-3d80af01f580) and click on Share -> Publish.
+# Build para produção
+npm run build
 
-## Can I connect a custom domain to my Lovable project?
+# Preview da build
+npm run preview
+```
 
-Yes, you can!
+## 📞 Contatos Estratégicos
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### 👨‍💼 CCO (Chief Commercial Officer)
+- **WhatsApp**: [+55 12 99152-8871](https://wa.me/5512991528871)
+- **Foco**: Estratégia comercial e negociações
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### 👩‍💼 SDR (Sales Development Representative)
+- **WhatsApp**: [+55 12 99231-7773](https://wa.me/5512992317773)
+- **Foco**: Apresentações técnicas e demonstrações
+
+### 🌐 Links Importantes
+- **Contato Geral**: [https://link.online.des.br/falecombeti](https://link.online.des.br/falecombeti)
+- **Briefing Gratuito**: [https://websolutions.eti.br/briefing](https://websolutions.eti.br/briefing)
+
+## 🗺️ Roadmap de Melhorias
+
+### ✅ Concluído
+- [x] Interface responsiva e moderna
+- [x] Sistema de acessibilidade completo
+- [x] Integração WhatsApp estratégica
+- [x] Otimização de performance
+- [x] SEO avançado
+
+### 🚧 Em Desenvolvimento
+- [ ] Dashboard administrativo
+- [ ] Sistema de agendamentos
+- [ ] Integração CRM avançada
+- [ ] Chat ao vivo integrado
+
+### 📅 Próximas Versões
+- [ ] Painel de analytics em tempo real
+- [ ] Integração com múltiplas plataformas
+- [ ] API pública para desenvolvedores
+- [ ] App mobile nativo
+
+## 🤝 Contribuição
+
+### Padrões de Commit (Português)
+```
+feat: nova funcionalidade de agendamento
+fix: correção no menu de acessibilidade
+docs: atualização do README
+style: ajustes de responsividade
+refactor: reorganização dos componentes
+test: adição de testes unitários
+chore: atualização de dependências
+```
+
+### Processo de Contribuição
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -m 'feat: adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## 👨‍💻 Desenvolvido por
+
+**Web Solutions ETI - Guilherme Puentes**
+- 🌐 Site: [websolutions.eti.br](https://websolutions.eti.br)
+- 📧 Email: contato@websolutions.eti.br
+- 💼 LinkedIn: [Guilherme Puentes](https://linkedin.com/in/guilhermepuentes)
+
+---
+
+<div align="center">
+
+**🚀 Transforme seu atendimento com a BETI!**
+
+[Falar com a BETI](https://link.online.des.br/falecombeti) • [Solicitar Briefing](https://websolutions.eti.br/briefing) • [Ver Demonstração](#)
+
+</div>
