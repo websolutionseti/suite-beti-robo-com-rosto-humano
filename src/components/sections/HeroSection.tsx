@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MessageCircle, BarChart3 } from "lucide-react";
+import { ArrowRight, MessageCircle, BarChart3, FileText } from "lucide-react";
 import betiHero from "@/assets/beti-hero.jpg";
 const HeroSection = () => {
-  const whatsappUrl = "https://wa.me/5511999999999?text=Ol%C3%A1%2C%20quero%20conhecer%20a%20Su%C3%ADte%20BETI";
+  const whatsappUrl = "https://wa.me/5512991528871?text=Ol%C3%A1%2C%20quero%20conhecer%20a%20Su%C3%ADte%20BETI%20e%20falar%20com%20o%20CCO";
+  const briefingUrl = "https://websolutions.eti.br/briefing";
   return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary-glow to-accent">
       {/* Background decorations */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIi8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
@@ -57,6 +58,13 @@ const HeroSection = () => {
             })}>
                 Ver como funciona
                 <ArrowRight className="ml-2" />
+              </Button>
+              
+              <Button variant="outline-white" size="lg" asChild className="text-lg px-8 py-4 h-auto">
+                <a href={briefingUrl} target="_blank" rel="noopener noreferrer">
+                  <FileText className="mr-2" />
+                  Briefing Gratuito
+                </a>
               </Button>
             </div>
 

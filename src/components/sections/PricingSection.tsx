@@ -53,7 +53,7 @@ const PricingSection = () => {
     }
   ];
 
-  const whatsappUrl = "https://wa.me/5511999999999?text=Ol%C3%A1%2C%20quero%20solicitar%20uma%20apresenta%C3%A7%C3%A3o%20da%20Su%C3%ADte%20BETI";
+  const whatsappSDR = "https://wa.me/5512992317773?text=Ol%C3%A1%2C%20quero%20solicitar%20uma%20apresenta%C3%A7%C3%A3o%20da%20Su%C3%ADte%20BETI";
 
   return (
     <section id="pricing" className="py-20 bg-gradient-to-br from-background to-muted/30">
@@ -121,7 +121,7 @@ const PricingSection = () => {
                 className="w-full"
                 asChild
               >
-                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                <a href={whatsappSDR} target="_blank" rel="noopener noreferrer">
                   Solicitar Apresentação
                 </a>
               </Button>

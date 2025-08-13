@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, ArrowRight, Phone } from "lucide-react";
 
 const CtaSection = () => {
-  const whatsappUrl = "https://wa.me/5511999999999?text=Ol%C3%A1%2C%20quero%20conhecer%20mais%20sobre%20a%20Su%C3%ADte%20BETI%20e%20agendar%20uma%20demonstra%C3%A7%C3%A3o";
+  const whatsappCCO = "https://wa.me/5512991528871?text=Ol%C3%A1%2C%20quero%20conhecer%20mais%20sobre%20a%20Su%C3%ADte%20BETI%20e%20fechar%20neg%C3%B3cio%20com%20o%20CCO";
+  const whatsappDemo = "https://wa.me/5512992317773?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20da%20Su%C3%ADte%20BETI";
 
   return (
     <section className="py-20 bg-gradient-to-br from-primary via-primary-glow to-accent relative overflow-hidden">
@@ -27,7 +28,7 @@ const CtaSection = () => {
               asChild
               className="text-lg px-8 py-4 h-auto"
             >
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+              <a href={whatsappCCO} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2" />
                 Fale com a BETI agora
               </a>
@@ -39,7 +40,7 @@ const CtaSection = () => {
               className="text-lg px-8 py-4 h-auto"
               asChild
             >
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+              <a href={whatsappDemo} target="_blank" rel="noopener noreferrer">
                 <Phone className="mr-2" />
                 Solicitar Demonstração
               </a>

@@ -2,7 +2,7 @@ import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const FloatingWhatsApp = () => {
-  const whatsappUrl = "https://wa.me/5511999999999?text=Ol%C3%A1%2C%20vim%20do%20site%20da%20Su%C3%ADte%20BETI%20e%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es";
+  const whatsappUrl = "https://link.online.des.br/falecombeti";
 
   return (
     <div className="fixed bottom-6 right-6 z-50">

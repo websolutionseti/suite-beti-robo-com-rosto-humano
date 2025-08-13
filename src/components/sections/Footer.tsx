@@ -2,7 +2,7 @@ import { MessageCircle, Mail, MapPin, Phone } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const whatsappUrl = "https://wa.me/5511999999999";
+  const whatsappUrl = "https://link.online.des.br/falecombeti";
 
   return (
     <footer className="bg-foreground text-white py-16">
@@ -22,7 +22,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Phone size={16} className="text-primary-glow" />
-                <span>+55 (11) 99999-9999</span>
+                <span>+55 (12) 99152-8871</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Mail size={16} className="text-primary-glow" />
