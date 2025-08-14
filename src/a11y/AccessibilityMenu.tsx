@@ -11,8 +11,14 @@ import {
   ChevronUp,
   ChevronDown,
   Minus,
-  Plus
+  Plus,
+  Download,
+  FileText,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
+import { Toggle } from '@/components/ui/toggle';
+import { Separator } from '@/components/ui/separator';
 import { useAccessibility } from './AccessibilityProvider';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +26,92 @@ export const AccessibilityMenu: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { settings, updateFontSize, updateContrast, toggleReducedMotion, toggleAnnouncements, resetSettings, announce } = useAccessibility();
+
+  const handleExportToText = () => {
+    try {
+      // Coletar todo o texto da página
+      const pageTitle = document.title;
+      const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
+        .map(h => `${h.tagName}: ${h.textContent?.trim()}`);
+      
+      const paragraphs = Array.from(document.querySelectorAll('p'))
+        .map(p => p.textContent?.trim())
+        .filter(text => text && text.length > 0);
+      
+      const lists = Array.from(document.querySelectorAll('ul, ol'))
+        .map(list => {
+          const items = Array.from(list.querySelectorAll('li'))
+            .map(li => `• ${li.textContent?.trim()}`);
+          return items.join('\n');
+        });
+      
+      const images = Array.from(document.querySelectorAll('img'))
+        .map(img => {
+          const alt = img.getAttribute('alt') || 'Imagem sem descrição';
+          const src = img.getAttribute('src') || '';
+          return `[IMAGEM] ${alt} (${src})`;
+        });
+      
+      const links = Array.from(document.querySelectorAll('a[href]'))
+        .map(link => {
+          const text = link.textContent?.trim();
+          const href = link.getAttribute('href');
+          return `[LINK] ${text} (${href})`;
+        });
+      
+      // Montar o conteúdo final
+      let content = `EXPORTAÇÃO DE TEXTO - ${pageTitle}\n`;
+      content += `${'='.repeat(50)}\n\n`;
+      
+      if (headings.length > 0) {
+        content += `TÍTULOS E CABEÇALHOS:\n${'-'.repeat(20)}\n`;
+        content += headings.join('\n') + '\n\n';
+      }
+      
+      if (paragraphs.length > 0) {
+        content += `CONTEÚDO DE TEXTO:\n${'-'.repeat(20)}\n`;
+        content += paragraphs.join('\n\n') + '\n\n';
+      }
+      
+      if (lists.length > 0) {
+        content += `LISTAS:\n${'-'.repeat(20)}\n`;
+        content += lists.join('\n\n') + '\n\n';
+      }
+      
+      if (images.length > 0) {
+        content += `IMAGENS E DESCRIÇÕES ALT:\n${'-'.repeat(30)}\n`;
+        content += images.join('\n') + '\n\n';
+      }
+      
+      if (links.length > 0) {
+        content += `LINKS:\n${'-'.repeat(20)}\n`;
+        content += links.join('\n') + '\n\n';
+      }
+      
+      content += `\nExportado em: ${new Date().toLocaleString('pt-BR')}\n`;
+      content += `Configurações de acessibilidade ativas:\n`;
+      content += `- Tamanho da fonte: ${settings.fontSize}px\n`;
+      content += `- Contraste: ${settings.contrast}\n`;
+      content += `- Animações reduzidas: ${settings.reducedMotion ? 'Sim' : 'Não'}\n`;
+      content += `- Anúncios habilitados: ${settings.announcements ? 'Sim' : 'Não'}\n`;
+      
+      // Criar e baixar arquivo
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `beti-conteudo-${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      announce('Conteúdo da página exportado como arquivo de texto');
+    } catch (error) {
+      console.error('Erro ao exportar conteúdo:', error);
+      announce('Erro ao exportar conteúdo da página');
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -143,44 +235,98 @@ export const AccessibilityMenu: React.FC = () => {
                 </div>
               </div>
 
-              {/* Contrast */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleContrastChange}
-                className="w-full justify-start gap-2 h-8"
-                aria-label={`Contraste atual: ${settings.contrast}`}
-              >
-                <Contrast size={14} className="text-muted-foreground" />
-                <span className="text-xs">Contraste</span>
-              </Button>
+              {/* Contrast Toggle */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Contrast size={14} className="text-muted-foreground" />
+                  <span className="text-xs">Alto Contraste</span>
+                </div>
+                <Toggle
+                  pressed={settings.contrast === 'high'}
+                  onPressedChange={() => updateContrast(settings.contrast === 'high' ? 'normal' : 'high')}
+                  aria-label={`Alto contraste ${settings.contrast === 'high' ? 'ativado' : 'desativado'}`}
+                  className="h-6 w-10 data-[state=on]:bg-primary"
+                >
+                  {settings.contrast === 'high' ? (
+                    <ToggleRight size={12} className="text-primary-foreground" />
+                  ) : (
+                    <ToggleLeft size={12} className="text-muted-foreground" />
+                  )}
+                </Toggle>
+              </div>
 
-              {/* Reduced Motion */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleReducedMotionToggle}
-                className="w-full justify-start gap-2 h-8"
-                aria-pressed={settings.reducedMotion}
-              >
-                <Eye size={14} className="text-muted-foreground" />
-                <span className="text-xs">
-                  {settings.reducedMotion ? 'Habilitar' : 'Reduzir'} animações
-                </span>
-              </Button>
+              {/* Dark Mode Toggle */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Eye size={14} className="text-muted-foreground" />
+                  <span className="text-xs">Modo Escuro</span>
+                </div>
+                <Toggle
+                  pressed={settings.contrast === 'dark'}
+                  onPressedChange={() => updateContrast(settings.contrast === 'dark' ? 'normal' : 'dark')}
+                  aria-label={`Modo escuro ${settings.contrast === 'dark' ? 'ativado' : 'desativado'}`}
+                  className="h-6 w-10 data-[state=on]:bg-primary"
+                >
+                  {settings.contrast === 'dark' ? (
+                    <ToggleRight size={12} className="text-primary-foreground" />
+                  ) : (
+                    <ToggleLeft size={12} className="text-muted-foreground" />
+                  )}
+                </Toggle>
+              </div>
 
-              {/* Announcements */}
+              {/* Reduced Motion Toggle */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Eye size={14} className="text-muted-foreground" />
+                  <span className="text-xs">Reduzir Animações</span>
+                </div>
+                <Toggle
+                  pressed={settings.reducedMotion}
+                  onPressedChange={toggleReducedMotion}
+                  aria-label={`Animações reduzidas ${settings.reducedMotion ? 'ativadas' : 'desativadas'}`}
+                  className="h-6 w-10 data-[state=on]:bg-primary"
+                >
+                  {settings.reducedMotion ? (
+                    <ToggleRight size={12} className="text-primary-foreground" />
+                  ) : (
+                    <ToggleLeft size={12} className="text-muted-foreground" />
+                  )}
+                </Toggle>
+              </div>
+
+              {/* Announcements Toggle */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Volume2 size={14} className="text-muted-foreground" />
+                  <span className="text-xs">Anúncios de Tela</span>
+                </div>
+                <Toggle
+                  pressed={settings.announcements}
+                  onPressedChange={toggleAnnouncements}
+                  aria-label={`Anúncios para leitores de tela ${settings.announcements ? 'ativados' : 'desativados'}`}
+                  className="h-6 w-10 data-[state=on]:bg-primary"
+                >
+                  {settings.announcements ? (
+                    <ToggleRight size={12} className="text-primary-foreground" />
+                  ) : (
+                    <ToggleLeft size={12} className="text-muted-foreground" />
+                  )}
+                </Toggle>
+              </div>
+
+              <Separator className="my-2" />
+
+              {/* Export Content */}
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleAnnouncementsToggle}
-                className="w-full justify-start gap-2 h-8"
-                aria-pressed={settings.announcements}
+                onClick={handleExportToText}
+                className="w-full justify-start gap-2 h-8 text-muted-foreground hover:text-foreground"
+                aria-label="Exportar conteúdo da página como texto"
               >
-                <Volume2 size={14} className="text-muted-foreground" />
-                <span className="text-xs">
-                  {settings.announcements ? 'Desabilitar' : 'Habilitar'} anúncios
-                </span>
+                <Download size={14} />
+                <span className="text-xs">Exportar Texto</span>
               </Button>
 
               {/* Reset */}

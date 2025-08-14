@@ -9,6 +9,20 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { AccessibilityProvider } from "@/a11y";
 import SkipLink from "@/a11y/SkipLink";
+import { useColorblindSupport } from "@/hooks/useColorblindSupport";
+
+const AppContent = () => {
+  useColorblindSupport();
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 const App = () => {
   // Create QueryClient inside the component to ensure it's created in the right context
@@ -27,13 +41,7 @@ const App = () => {
           <SkipLink />
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <AppContent />
         </TooltipProvider>
       </AccessibilityProvider>
     </QueryClientProvider>
