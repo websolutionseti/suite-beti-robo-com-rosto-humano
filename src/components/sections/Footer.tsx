@@ -1,11 +1,8 @@
 import { MessageCircle, Mail, MapPin, Phone } from "lucide-react";
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const whatsappUrl = "https://link.online.des.br/falecombeti";
-
-  return (
-    <footer className="bg-foreground text-white py-16">
+  return <footer className="bg-foreground text-white py-16">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -66,18 +63,13 @@ const Footer = () => {
             </div>
             
             <div className="flex items-center gap-6">
-              <a 
-                href={whatsappUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-success hover:bg-success/90 text-white px-4 py-2 rounded-lg transition-colors text-sm"
-              >
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-success hover:bg-success/90 text-white px-4 py-2 rounded-lg transition-colors text-sm">
                 <MessageCircle size={16} />
                 WhatsApp
               </a>
               
               <div className="text-xs text-white/60">
-                <span>LGPD Compliant | </span>
+                <span>LGPD | </span>
                 <span>Tecnologia Nacional</span>
               </div>
             </div>
@@ -94,8 +86,6 @@ const Footer = () => {
           </p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
