@@ -1,0 +1,23 @@
+# Dockerfile para desenvolvimento
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Instalar dependências do sistema
+RUN apk add --no-cache libc6-compat git
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+COPY bun.lockb* ./
+
+# Instalar todas as dependências (incluindo dev)
+RUN npm install
+
+# Copiar código fonte
+COPY . .
+
+# Expor porta
+EXPOSE 8080
+
+# Comando para desenvolvimento com hot reload
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
