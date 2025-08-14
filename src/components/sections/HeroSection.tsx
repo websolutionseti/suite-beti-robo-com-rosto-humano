@@ -84,7 +84,14 @@ const HeroSection = () => {
           {/* Hero Image */}
           <div className="relative animate-slide-in-right">
             <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-              <img src={betiHero} alt="BETI - Assistente digital inteligente da Web Solutions ETI" className="w-full h-auto animate-float" />
+            <img 
+              src={betiHero} 
+              alt="BETI - Chatbot inteligente com IA para automação de atendimento WhatsApp que aumenta vendas em 150% e reduz custos em 50% com empatia humana 24 horas por dia" 
+              className="w-full h-auto animate-float"
+              loading="eager"
+              width="600"
+              height="400"
+            />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
             

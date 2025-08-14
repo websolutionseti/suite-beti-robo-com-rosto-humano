@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  <url>
+    <loc>https://beti.websolutions.eti.br/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://beti.websolutions.eti.br/src/imagem/beti-hero.jpg</image:loc>
+      <image:title>BETI - Chatbot Inteligente com IA</image:title>
+      <image:caption>BETI é uma agente digital que automatiza atendimento WhatsApp com empatia humana</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://beti.websolutions.eti.br/src/imagem/logo-beti.png</image:loc>
+      <image:title>Logo BETI - Web Solutions ETI</image:title>
+      <image:caption>Logotipo oficial da BETI, chatbot inteligente da Web Solutions ETI</image:caption>
+    </image:image>
+  </url>
+</urlset>

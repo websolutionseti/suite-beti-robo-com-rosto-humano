@@ -2,7 +2,7 @@ import { AlertTriangle, Bot, UserX, CheckCircle } from "lucide-react";
 
 const ProblemSection = () => {
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-20 bg-muted/30" aria-labelledby="problem-heading">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-destructive/10 text-destructive px-4 py-2 rounded-full text-sm font-medium mb-6">
@@ -10,9 +10,9 @@ const ProblemSection = () => {
             O problema real dos negócios
           </div>
           
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-            Muitos negócios perdem vendas e clientes por falta de{" "}
-            <span className="text-gradient">atendimento rápido e humanizado</span>
+          <h2 id="problem-heading" className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+            Negócios Perdem Vendas por Falta de{" "}
+            <span className="text-gradient">Atendimento Automatizado Inteligente</span>
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">

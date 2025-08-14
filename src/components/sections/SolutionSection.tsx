@@ -35,7 +35,7 @@ const SolutionSection = () => {
   ];
 
   return (
-    <section id="solution" className="py-20 bg-gradient-to-br from-background to-muted/30">
+    <section id="solution" className="py-20 bg-gradient-to-br from-background to-muted/30" aria-labelledby="solution-heading">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
@@ -43,10 +43,10 @@ const SolutionSection = () => {
             A Solução Inteligente
           </div>
           
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-            A BETI é uma{" "}
-            <span className="text-gradient">agente digital estratégica</span>
-            {" "}que revoluciona seu atendimento
+          <h2 id="solution-heading" className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+            BETI: Chatbot IA que{" "}
+            <span className="text-gradient">Revoluciona Seu Atendimento</span>
+            {" "}com Automação Inteligente
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
