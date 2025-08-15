@@ -388,16 +388,16 @@ export const AccessibilityMenu = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm font-medium">
-                    Anúncios de tela
+                    Ouvir texto
                     <span className="sr-only">
-                      Ativa feedback sonoro via leitores de tela para informar sobre mudanças na interface
+                      Clique para ouvir o conteúdo da página
                     </span>
                   </Label>
                   <Button
                     variant={settings.announcements ? "default" : "outline"}
                     size="sm"
                     onClick={handleAnnouncementsToggle}
-                    aria-label={`${settings.announcements ? 'Desativar' : 'Ativar'} anúncios de tela`}
+                    aria-label={`${settings.announcements ? 'Desativar' : 'Ativar'} ouvir texto`}
                     role="switch"
                     aria-checked={settings.announcements}
                     className="flex items-center gap-2 h-9"

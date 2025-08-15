@@ -6,9 +6,7 @@ import PricingSection from "@/components/sections/PricingSection";
 import CtaSection from "@/components/sections/CtaSection";
 import Footer from "@/components/sections/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import { AccessibilityMenu } from "@/a11y";
-import TranslateIcon from "@/components/TranslateIcon";
-import ConditionalA11yIcon from "@/components/ConditionalA11yIcon";
+import FloatingMenu from "@/components/FloatingMenu";
 import PWAButton from "@/components/PWAButton";
 import ConditionalExport from "@/components/ConditionalExport";
 
@@ -37,8 +35,7 @@ const Index = () => {
       </main>
       <Footer />
       <FloatingWhatsApp />
-      <TranslateIcon />
-      <ConditionalA11yIcon />
+      <FloatingMenu />
       <PWAButton />
       <ConditionalExport />
     </div>
