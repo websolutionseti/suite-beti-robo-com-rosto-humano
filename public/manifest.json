@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/pwa-beti-icon.png",
+      "src": "/lovable-uploads/f05ab551-cc60-4ce7-8706-d8ec8cee58da.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/pwa-beti-icon.png", 
+      "src": "/lovable-uploads/f05ab551-cc60-4ce7-8706-d8ec8cee58da.png", 
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

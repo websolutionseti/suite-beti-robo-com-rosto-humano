@@ -17,9 +17,16 @@ const CtaSection = () => {
             <span className="text-white/90">atendimento?</span>
           </h2>
           
-          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Com a BETI, você não instala um robô. Você ganha uma equipe digital.
-          </p>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-8 max-w-4xl mx-auto">
+            <img 
+              src="/lovable-uploads/f05ab551-cc60-4ce7-8706-d8ec8cee58da.png" 
+              alt="BETI - Chatbot com Rosto Humano" 
+              className="w-16 h-16 md:w-20 md:h-20 md:order-2 flex-shrink-0"
+            />
+            <p className="text-xl md:text-2xl text-white/90 text-center md:text-left md:order-1">
+              Com a BETI, você não instala um robô. Você ganha uma equipe digital.
+            </p>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button 
