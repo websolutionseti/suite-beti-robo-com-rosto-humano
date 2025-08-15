@@ -62,9 +62,9 @@ const PricingSection = () => {
     <section id="pricing" className="py-20 bg-gradient-to-br from-background to-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <Star size={16} />
-            Faixas de Investimento
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full font-medium mb-6">
+            <Zap size={16} />
+            <span>Faixas de Investimento</span>
           </div>
           
           <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
@@ -100,20 +100,20 @@ const PricingSection = () => {
                   {plan.icon}
                 </div>
                 
-                <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
-                <p className="text-muted-foreground text-sm mb-4">{plan.description}</p>
+                <h3 className="font-bold text-foreground mb-2">{plan.name}</h3>
+                <p className="text-muted-foreground mb-4">{plan.description}</p>
                 
                 <div className="mb-2">
-                  <span className="text-3xl font-bold text-primary">{plan.price}</span>
+                  <span className="font-bold text-primary">{plan.price}</span>
                 </div>
-                <div className="text-sm font-medium text-success">{plan.roi}</div>
+                <div className="font-medium text-success">{plan.roi}</div>
               </div>
 
               <div className="space-y-4 mb-8">
                 {plan.features.map((feature, featureIndex) => (
                   <div key={featureIndex} className="flex items-center gap-3">
                     <Check size={20} className="text-success flex-shrink-0" />
-                    <span className="text-foreground text-sm">{feature}</span>
+                    <span className="text-foreground">{feature}</span>
                   </div>
                 ))}
               </div>

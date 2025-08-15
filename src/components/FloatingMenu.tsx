@@ -154,8 +154,13 @@ const FloatingMenu = () => {
   }, []);
 
   const renderMainMenu = () => (
-    <div className="space-y-3">
-      <h3 className="font-semibold text-sm">Menu de Recursos</h3>
+    <div className="space-y-4">
+      <div className="text-center pb-3 border-b border-border/30">
+        <h3 className="font-semibold text-foreground mb-1">🚀 Menu de Recursos</h3>
+        <p className="text-xs text-muted-foreground">Personalize sua experiência</p>
+      </div>
+      
+      {/* Quick Actions Grid */}
       <div className="grid grid-cols-3 gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -163,13 +168,15 @@ const FloatingMenu = () => {
               variant="outline"
               size="sm"
               onClick={() => setActiveMenu('accessibility')}
-              className="h-12 flex-col gap-1 hover:bg-accent"
+              className="h-14 flex-col gap-1 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200"
             >
-              <Accessibility className="w-4 h-4" />
-              <span className="text-xs">A11y</span>
+              <Accessibility className="w-4 h-4 text-primary" />
+              <span className="text-xs font-medium">A11y</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Acessibilidade</TooltipContent>
+          <TooltipContent side="bottom">
+            <p className="text-xs">Recursos de acessibilidade</p>
+          </TooltipContent>
         </Tooltip>
 
         <Tooltip>
@@ -178,13 +185,15 @@ const FloatingMenu = () => {
               variant="outline"
               size="sm"
               onClick={() => setActiveMenu('translate')}
-              className="h-12 flex-col gap-1 hover:bg-accent"
+              className="h-14 flex-col gap-1 hover:bg-success/5 hover:border-success/30 transition-all duration-200"
             >
-              <Languages className="w-4 h-4" />
-              <span className="text-xs">Idioma</span>
+              <Languages className="w-4 h-4 text-success" />
+              <span className="text-xs font-medium">Idioma</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Traduzir</TooltipContent>
+          <TooltipContent side="bottom">
+            <p className="text-xs">Traduzir conteúdo</p>
+          </TooltipContent>
         </Tooltip>
 
         <Tooltip>
@@ -193,27 +202,42 @@ const FloatingMenu = () => {
               variant="outline"
               size="sm"
               onClick={() => setActiveMenu('contacts')}
-              className="h-12 flex-col gap-1 hover:bg-accent"
+              className="h-14 flex-col gap-1 hover:bg-accent/5 hover:border-accent/30 transition-all duration-200"
             >
-              <User className="w-4 h-4" />
-              <span className="text-xs">Contato</span>
+              <User className="w-4 h-4 text-accent-foreground" />
+              <span className="text-xs font-medium">Contato</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Contatos</TooltipContent>
+          <TooltipContent side="bottom">
+            <p className="text-xs">Links e contatos</p>
+          </TooltipContent>
         </Tooltip>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="pt-3 border-t border-border/30">
+        <div className="text-xs text-muted-foreground text-center">
+          <p>Fonte atual: <span className="font-mono text-primary">{currentFontSize}px</span></p>
+          <p>Idioma: <span className="text-foreground font-medium">
+            {languages.find(l => l.code === currentLanguage)?.flag} {languages.find(l => l.code === currentLanguage)?.name}
+          </span></p>
+        </div>
       </div>
     </div>
   );
 
   const renderAccessibilityMenu = () => (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-sm">Acessibilidade</h3>
+      <div className="flex items-center justify-between pb-3 border-b border-border/30">
+        <div className="flex items-center gap-2">
+          <Accessibility className="w-4 h-4 text-primary" />
+          <h3 className="font-semibold text-foreground">Acessibilidade</h3>
+        </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setActiveMenu('main')}
-          className="h-6 w-6 p-0"
+          className="h-7 w-7 p-0 hover:bg-accent rounded-full"
         >
           ←
         </Button>
@@ -419,7 +443,7 @@ const FloatingMenu = () => {
         </Button>
 
         {isOpen && (
-          <Card className="absolute top-12 right-0 w-64 p-4 shadow-xl animate-fade-in bg-background border z-10">
+          <Card className="absolute top-12 right-0 w-72 p-5 shadow-xl animate-fade-in bg-background/95 backdrop-blur-sm border border-border/50 z-10">
             {renderContent()}
           </Card>
         )}
