@@ -118,15 +118,16 @@ const FloatingMenu = () => {
     setActiveMenu('main');
   };
 
-  const handleFontSizeChange = (increase: boolean) => {
-    const contentDiv = document.querySelector('#main-content') as HTMLElement;
-    if (!contentDiv) return;
+  const [currentFontSize, setCurrentFontSize] = useState(18);
 
-    const currentSize = parseInt(window.getComputedStyle(contentDiv).fontSize) || 16;
-    const newSize = increase ? Math.min(24, currentSize + 2) : Math.max(16, currentSize - 2);
+  const handleFontSizeChange = (increase: boolean) => {
+    const savedSize = parseInt(localStorage.getItem('preferredFontSize') || '18');
+    const newSize = increase ? Math.min(24, savedSize + 2) : Math.max(16, savedSize - 2);
     
-    contentDiv.style.fontSize = `${newSize}px`;
+    // Apply to document root for global effect
+    document.documentElement.style.fontSize = `${newSize}px`;
     localStorage.setItem('preferredFontSize', newSize.toString());
+    setCurrentFontSize(newSize);
     
     trackA11yInteraction();
     announce(increase ? `Fonte aumentada para ${newSize}px` : `Fonte diminuída para ${newSize}px`);
@@ -147,10 +148,8 @@ const FloatingMenu = () => {
   useEffect(() => {
     const savedSize = localStorage.getItem('preferredFontSize');
     if (savedSize) {
-      const contentDiv = document.querySelector('#main-content') as HTMLElement;
-      if (contentDiv) {
-        contentDiv.style.fontSize = `${savedSize}px`;
-      }
+      document.documentElement.style.fontSize = `${savedSize}px`;
+      setCurrentFontSize(parseInt(savedSize));
     }
   }, []);
 
@@ -232,7 +231,7 @@ const FloatingMenu = () => {
           >
             <Minus className="w-3 h-3" />
           </Button>
-          <span className="text-xs px-2">Fonte</span>
+          <span className="text-xs px-2 min-w-10 text-center font-mono">{currentFontSize}px</span>
           <Button
             variant="outline"
             size="sm"
