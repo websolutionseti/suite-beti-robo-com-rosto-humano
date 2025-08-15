@@ -1,8 +1,10 @@
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useInteractionTracker } from "@/hooks/useInteractionTracker";
 
 const FloatingWhatsApp = () => {
   const whatsappUrl = "https://link.online.des.br/falecombeti";
+  const { trackWhatsAppInteraction } = useInteractionTracker();
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -17,6 +19,7 @@ const FloatingWhatsApp = () => {
           target="_blank" 
           rel="noopener noreferrer"
           aria-label="Conversar no WhatsApp"
+          onClick={trackWhatsAppInteraction}
         >
           <MessageCircle size={28} />
         </a>

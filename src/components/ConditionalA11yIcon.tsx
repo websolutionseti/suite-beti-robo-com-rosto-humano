@@ -82,8 +82,13 @@ const ConditionalA11yIcon = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsOpen(!isOpen)}
-              className="shadow-lg bg-background/80 backdrop-blur-sm hover:bg-accent"
+              onClick={() => {
+                setIsOpen(!isOpen);
+                if (!isOpen) {
+                  trackA11yInteraction();
+                }
+              }}
+              className="shadow-lg bg-background hover:bg-accent"
               aria-label={t('a11y.tooltip')}
             >
               <Accessibility className="w-4 h-4" />
@@ -95,7 +100,7 @@ const ConditionalA11yIcon = () => {
         </Tooltip>
 
         {isOpen && (
-          <Card className="absolute top-12 right-0 w-72 p-4 shadow-xl animate-fade-in">
+          <Card className="absolute top-12 right-0 w-72 p-4 shadow-xl animate-fade-in bg-background border">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">

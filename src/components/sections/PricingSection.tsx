@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Check, Star, Zap, Crown } from "lucide-react";
+import { useInteractionTracker } from "@/hooks/useInteractionTracker";
 
 const PricingSection = () => {
+  const { trackPricingInteraction } = useInteractionTracker();
+  
   const plans = [
     {
       name: "MEI",
@@ -121,7 +124,7 @@ const PricingSection = () => {
                 className="w-full"
                 asChild
               >
-                <a href={whatsappSDR} target="_blank" rel="noopener noreferrer">
+                <a href={whatsappSDR} target="_blank" rel="noopener noreferrer" onClick={trackPricingInteraction}>
                   Solicitar Apresentação
                 </a>
               </Button>
