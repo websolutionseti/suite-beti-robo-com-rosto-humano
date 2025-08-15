@@ -1,0 +1,147 @@
+name: 🌊 GitFlow Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - develop
+      - 'release/*'
+      - 'hotfix/*'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-gitflow:
+    name: 🌊 Validate GitFlow Branch Strategy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Validate branch naming
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          TARGET_BRANCH="${{ github.base_ref }}"
+          
+          echo "Source branch: $BRANCH_NAME"
+          echo "Target branch: $TARGET_BRANCH"
+          
+          # Define valid branch patterns
+          VALID_PATTERNS=(
+            "^feature/.+"
+            "^bugfix/.+"
+            "^hotfix/.+"
+            "^release/.+"
+            "^develop$"
+            "^main$"
+            "^support/.+"
+            "^docs/.+"
+            "^chore/.+"
+          )
+          
+          # Check if branch name follows GitFlow conventions
+          VALID=false
+          for pattern in "${VALID_PATTERNS[@]}"; do
+            if [[ "$BRANCH_NAME" =~ $pattern ]]; then
+              VALID=true
+              break
+            fi
+          done
+          
+          if [[ "$VALID" != "true" ]]; then
+            echo "❌ Branch name '$BRANCH_NAME' doesn't follow GitFlow conventions"
+            echo "Valid patterns:"
+            echo "  - feature/description"
+            echo "  - bugfix/description"
+            echo "  - hotfix/description"
+            echo "  - release/version"
+            echo "  - docs/description"
+            echo "  - chore/description"
+            echo "  - support/description"
+            exit 1
+          fi
+          
+          # Validate merge targets
+          case "$BRANCH_NAME" in
+            feature/*)
+              if [[ "$TARGET_BRANCH" != "develop" ]]; then
+                echo "❌ Feature branches should merge into 'develop', not '$TARGET_BRANCH'"
+                exit 1
+              fi
+              ;;
+            bugfix/*)
+              if [[ "$TARGET_BRANCH" != "develop" ]]; then
+                echo "❌ Bugfix branches should merge into 'develop', not '$TARGET_BRANCH'"
+                exit 1
+              fi
+              ;;
+            hotfix/*)
+              if [[ "$TARGET_BRANCH" != "main" && "$TARGET_BRANCH" != "master" ]]; then
+                echo "❌ Hotfix branches should merge into 'main', not '$TARGET_BRANCH'"
+                exit 1
+              fi
+              ;;
+            release/*)
+              if [[ "$TARGET_BRANCH" != "main" && "$TARGET_BRANCH" != "master" ]]; then
+                echo "❌ Release branches should merge into 'main', not '$TARGET_BRANCH'"
+                exit 1
+              fi
+              ;;
+          esac
+          
+          echo "✅ Branch '$BRANCH_NAME' follows GitFlow conventions"
+
+      - name: 📝 Add GitFlow comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branchName = context.payload.pull_request.head.ref;
+            const targetBranch = context.payload.pull_request.base.ref;
+            
+            let branchType = "Unknown";
+            let emoji = "🔀";
+            
+            if (branchName.startsWith("feature/")) {
+              branchType = "Feature";
+              emoji = "✨";
+            } else if (branchName.startsWith("bugfix/")) {
+              branchType = "Bugfix";
+              emoji = "🐛";
+            } else if (branchName.startsWith("hotfix/")) {
+              branchType = "Hotfix";
+              emoji = "🚑";
+            } else if (branchName.startsWith("release/")) {
+              branchType = "Release";
+              emoji = "🚀";
+            } else if (branchName.startsWith("docs/")) {
+              branchType = "Documentation";
+              emoji = "📚";
+            } else if (branchName.startsWith("chore/")) {
+              branchType = "Chore";
+              emoji = "🧹";
+            }
+            
+            const comment = `## ${emoji} GitFlow Validation
+            
+            **Branch Type:** ${branchType}  
+            **Source:** \`${branchName}\`  
+            **Target:** \`${targetBranch}\`  
+            
+            ✅ This PR follows GitFlow conventions!
+            
+            ### GitFlow Summary:
+            - **Feature branches** → \`develop\`
+            - **Bugfix branches** → \`develop\`
+            - **Release branches** → \`main\`
+            - **Hotfix branches** → \`main\`
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
