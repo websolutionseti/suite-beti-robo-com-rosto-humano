@@ -1,348 +1,531 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { 
-  AccessibilityIcon, 
-  Eye, 
-  Type, 
-  Contrast, 
-  Volume2, 
-  RotateCcw,
-  ChevronUp,
-  ChevronDown,
-  Minus,
-  Plus,
-  Download,
-  FileText,
-  ToggleLeft,
-  ToggleRight
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
-import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Download, Settings, Plus, Minus, Sun, Moon, Zap, ZapOff, Volume2, VolumeX, Accessibility, Mail, CheckCircle } from 'lucide-react';
 import { useAccessibility } from './AccessibilityProvider';
-import { cn } from '@/lib/utils';
+import { useInteractionTracking } from '@/hooks/useInteractionTracking';
+import { useEmailVerification } from '@/hooks/useEmailVerification';
+import { toast } from '@/hooks/use-toast';
 
-export const AccessibilityMenu: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
+export const AccessibilityMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { settings, updateFontSize, updateContrast, toggleReducedMotion, toggleAnnouncements, resetSettings, announce } = useAccessibility();
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const {
+    settings,
+    updateFontSize,
+    updateContrast,
+    toggleReducedMotion,
+    toggleAnnouncements,
+    resetSettings,
+    announce
+  } = useAccessibility();
+  
+  const { interactions, markInteraction, allInteracted, resetInteractions } = useInteractionTracking();
+  const { email, verificationCode, isVerified, isLoading, error, verifyEmail, resetVerification } = useEmailVerification();
 
   const handleExportToText = () => {
+    if (!isVerified) {
+      toast({
+        title: "Verificação necessária",
+        description: "Complete a verificação por e-mail para exportar o conteúdo.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
-      // Coletar todo o texto da página
-      const pageTitle = document.title;
+      // Collect all text content from the page
       const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
-        .map(h => `${h.tagName}: ${h.textContent?.trim()}`);
-      
+        .map(el => `${el.tagName}: ${el.textContent?.trim()}`)
+        .filter(text => text.length > 3);
+
       const paragraphs = Array.from(document.querySelectorAll('p'))
-        .map(p => p.textContent?.trim())
-        .filter(text => text && text.length > 0);
-      
-      const lists = Array.from(document.querySelectorAll('ul, ol'))
-        .map(list => {
-          const items = Array.from(list.querySelectorAll('li'))
-            .map(li => `• ${li.textContent?.trim()}`);
-          return items.join('\n');
-        });
-      
+        .map(el => el.textContent?.trim())
+        .filter(text => text && text.length > 10);
+
+      const lists = Array.from(document.querySelectorAll('li'))
+        .map(el => `• ${el.textContent?.trim()}`)
+        .filter(text => text.length > 3);
+
       const images = Array.from(document.querySelectorAll('img'))
-        .map(img => {
-          const alt = img.getAttribute('alt') || 'Imagem sem descrição';
-          const src = img.getAttribute('src') || '';
-          return `[IMAGEM] ${alt} (${src})`;
-        });
-      
-      const links = Array.from(document.querySelectorAll('a[href]'))
-        .map(link => {
-          const text = link.textContent?.trim();
-          const href = link.getAttribute('href');
-          return `[LINK] ${text} (${href})`;
-        });
-      
-      // Montar o conteúdo final
-      let content = `EXPORTAÇÃO DE TEXTO - ${pageTitle}\n`;
-      content += `${'='.repeat(50)}\n\n`;
-      
-      if (headings.length > 0) {
-        content += `TÍTULOS E CABEÇALHOS:\n${'-'.repeat(20)}\n`;
-        content += headings.join('\n') + '\n\n';
-      }
-      
-      if (paragraphs.length > 0) {
-        content += `CONTEÚDO DE TEXTO:\n${'-'.repeat(20)}\n`;
-        content += paragraphs.join('\n\n') + '\n\n';
-      }
-      
-      if (lists.length > 0) {
-        content += `LISTAS:\n${'-'.repeat(20)}\n`;
-        content += lists.join('\n\n') + '\n\n';
-      }
-      
-      if (images.length > 0) {
-        content += `IMAGENS E DESCRIÇÕES ALT:\n${'-'.repeat(30)}\n`;
-        content += images.join('\n') + '\n\n';
-      }
-      
-      if (links.length > 0) {
-        content += `LINKS:\n${'-'.repeat(20)}\n`;
-        content += links.join('\n') + '\n\n';
-      }
-      
-      content += `\nExportado em: ${new Date().toLocaleString('pt-BR')}\n`;
-      content += `Configurações de acessibilidade ativas:\n`;
-      content += `- Tamanho da fonte: ${settings.fontSize}px\n`;
-      content += `- Contraste: ${settings.contrast}\n`;
-      content += `- Animações reduzidas: ${settings.reducedMotion ? 'Sim' : 'Não'}\n`;
-      content += `- Anúncios habilitados: ${settings.announcements ? 'Sim' : 'Não'}\n`;
-      
-      // Criar e baixar arquivo
+        .map(img => `Imagem: ${img.alt || 'Sem descrição alternativa'}`)
+        .filter(text => text.length > 8);
+
+      const links = Array.from(document.querySelectorAll('a'))
+        .map(link => `Link: ${link.textContent?.trim()} (${link.href})`)
+        .filter(text => text.length > 8);
+
+      // Include verification info
+      const verificationInfo = [
+        '\n=== INFORMAÇÕES DE VERIFICAÇÃO ===',
+        `E-mail verificado: ${email}`,
+        `Código de verificação: ${verificationCode}`,
+        `Data de exportação: ${new Date().toLocaleString('pt-BR')}`
+      ];
+
+      // Combine all content
+      const content = [
+        '=== CONTEÚDO DA PÁGINA ===\n',
+        ...headings,
+        '\n=== PARÁGRAFOS ===\n',
+        ...paragraphs,
+        '\n=== LISTAS ===\n',
+        ...lists,
+        '\n=== IMAGENS ===\n',
+        ...images,
+        '\n=== LINKS ===\n',
+        ...links,
+        ...verificationInfo
+      ].join('\n');
+
+      // Create and download file
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `beti-conteudo-${new Date().toISOString().split('T')[0]}.txt`;
+      link.download = `conteudo-pagina-${verificationCode}-${new Date().toISOString().split('T')[0]}.txt`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      
-      announce('Conteúdo da página exportado como arquivo de texto');
+
+      announce('Arquivo de texto exportado com sucesso com verificação');
+      toast({
+        title: "Exportação concluída",
+        description: "Arquivo baixado com sucesso!",
+      });
     } catch (error) {
       console.error('Erro ao exportar conteúdo:', error);
-      announce('Erro ao exportar conteúdo da página');
+      announce('Erro ao exportar arquivo');
+      toast({
+        title: "Erro na exportação",
+        description: "Não foi possível exportar o arquivo.",
+        variant: "destructive"
+      });
     }
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const solutionSection = document.getElementById('solution');
-      if (solutionSection) {
-        const rect = solutionSection.getBoundingClientRect();
-        const isInView = rect.top <= window.innerHeight && rect.bottom >= 0;
-        setIsVisible(isInView);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check initial position
+  const handleFontSizeChange = (increase: boolean) => {
+    const newSize = increase ? settings.fontSize + 2 : settings.fontSize - 2;
+    const clampedSize = Math.max(16, Math.min(24, newSize));
+    updateFontSize(clampedSize);
+    markInteraction('fontSize');
     
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-    announce(isOpen ? 'Menu de acessibilidade fechado' : 'Menu de acessibilidade aberto');
-  };
-
-  const handleFontSizeChange = (increment: boolean) => {
-    const newSize = settings.fontSize + (increment ? 2 : -2);
-    updateFontSize(newSize);
-    announce(`Tamanho da fonte: ${newSize}px`);
+    const description = increase 
+      ? `Fonte aumentada para ${clampedSize}px para melhor legibilidade` 
+      : `Fonte reduzida para ${clampedSize}px`;
+    announce(description);
+    
+    toast({
+      title: "Tamanho da fonte alterado",
+      description,
+    });
   };
 
   const handleContrastChange = () => {
-    const contrasts: Array<typeof settings.contrast> = ['normal', 'high', 'dark'];
-    const currentIndex = contrasts.indexOf(settings.contrast);
-    const nextContrast = contrasts[(currentIndex + 1) % contrasts.length];
-    updateContrast(nextContrast);
+    const modes = ['normal', 'high', 'dark'] as const;
+    const currentIndex = modes.indexOf(settings.contrast);
+    const nextMode = modes[(currentIndex + 1) % modes.length];
+    updateContrast(nextMode);
+    markInteraction('contrast');
     
-    const contrastLabels = {
-      normal: 'Normal',
-      high: 'Alto contraste',
-      dark: 'Modo escuro'
+    const modeLabels = {
+      normal: 'Contraste normal restaurado',
+      high: 'Alto contraste ativado para melhor visibilidade',
+      dark: 'Modo escuro ativado para reduzir fadiga visual'
     };
-    announce(`Contraste alterado para: ${contrastLabels[nextContrast]}`);
+    
+    announce(modeLabels[nextMode]);
+    toast({
+      title: "Contraste alterado",
+      description: modeLabels[nextMode],
+    });
   };
 
   const handleReducedMotionToggle = () => {
+    const newState = !settings.reducedMotion;
     toggleReducedMotion();
-    announce(settings.reducedMotion ? 'Animações habilitadas' : 'Animações reduzidas');
+    markInteraction('reducedMotion');
+    
+    const description = newState 
+      ? 'Animações reduzidas para evitar desconforto visual'
+      : 'Animações normais reativadas';
+    announce(description);
+    
+    toast({
+      title: "Animações " + (newState ? "reduzidas" : "normais"),
+      description,
+    });
   };
 
   const handleAnnouncementsToggle = () => {
+    const newState = !settings.announcements;
     toggleAnnouncements();
-    announce(settings.announcements ? 'Anúncios desabilitados' : 'Anúncios habilitados');
+    markInteraction('announcements');
+    
+    const description = newState 
+      ? 'Anúncios de tela ativados para feedback auditivo'
+      : 'Anúncios de tela desativados';
+    announce(description);
+    
+    toast({
+      title: "Anúncios " + (newState ? "ativados" : "desativados"),
+      description,
+    });
   };
 
   const handleReset = () => {
     resetSettings();
-    announce('Configurações de acessibilidade restauradas');
+    resetInteractions();
+    resetVerification();
+    setShowEmailForm(false);
+    announce('Todas as configurações de acessibilidade foram resetadas');
+    toast({
+      title: "Configurações resetadas",
+      description: "Todas as preferências foram restauradas ao padrão.",
+    });
   };
 
-  if (!isVisible) return null;
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailInput.trim()) {
+      verifyEmail(emailInput.trim());
+    }
+  };
+
+  const toggleEmailForm = () => {
+    if (!allInteracted) {
+      toast({
+        title: "Interação necessária",
+        description: "Clique em todas as opções de acessibilidade antes de exportar.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setShowEmailForm(!showEmailForm);
+  };
 
   return (
-    <div 
-      className={cn(
-        "fixed top-4 right-4 z-50 transition-all duration-300",
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+    <div className="fixed bottom-4 right-4 z-50">
+      {/* Ícone sempre visível */}
+      {!isOpen && (
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg transition-all duration-300 group"
+          aria-label="Abrir painel de acessibilidade"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setIsOpen(true);
+            }
+          }}
+        >
+          <Accessibility className="h-6 w-6 text-primary-foreground" />
+          <span className="sr-only">Acessibilidade</span>
+        </Button>
       )}
-      role="complementary"
-      aria-label="Menu de acessibilidade"
-    >
-      <Card className="bg-background/95 backdrop-blur-sm border shadow-lg">
-        <div className="p-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleToggle}
-            aria-expanded={isOpen}
-            aria-controls="accessibility-controls"
-            className="w-full justify-between gap-2"
-          >
-            <div className="flex items-center gap-2">
-              <AccessibilityIcon size={16} className="text-primary" />
-              <span className="text-sm font-medium">Acessibilidade</span>
-            </div>
-            {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </Button>
 
-          {isOpen && (
-            <div 
-              id="accessibility-controls"
-              className="mt-2 space-y-2 border-t pt-2"
-              role="group"
-              aria-label="Controles de acessibilidade"
-            >
-              {/* Font Size */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Type size={14} className="text-muted-foreground" />
-                  <span className="text-xs">Fonte</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleFontSizeChange(false)}
-                    disabled={settings.fontSize <= 12}
-                    aria-label="Diminuir fonte"
-                    className="h-6 w-6 p-0"
-                  >
-                    <Minus size={12} />
-                  </Button>
-                  <span className="text-xs w-8 text-center">{settings.fontSize}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleFontSizeChange(true)}
-                    disabled={settings.fontSize >= 24}
-                    aria-label="Aumentar fonte"
-                    className="h-6 w-6 p-0"
-                  >
-                    <Plus size={12} />
-                  </Button>
-                </div>
+      {/* Painel expandido */}
+      {isOpen && (
+        <Card className="bg-background/98 backdrop-blur-sm border shadow-xl max-w-sm animate-scale-in">
+          <div className="p-5">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <Accessibility className="h-6 w-6 text-primary" />
+                <h3 className="font-semibold text-lg">Acessibilidade</h3>
               </div>
-
-              {/* Contrast Toggle */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Contrast size={14} className="text-muted-foreground" />
-                  <span className="text-xs">Alto Contraste</span>
-                </div>
-                <Toggle
-                  pressed={settings.contrast === 'high'}
-                  onPressedChange={() => updateContrast(settings.contrast === 'high' ? 'normal' : 'high')}
-                  aria-label={`Alto contraste ${settings.contrast === 'high' ? 'ativado' : 'desativado'}`}
-                  className="h-6 w-10 data-[state=on]:bg-primary"
-                >
-                  {settings.contrast === 'high' ? (
-                    <ToggleRight size={12} className="text-primary-foreground" />
-                  ) : (
-                    <ToggleLeft size={12} className="text-muted-foreground" />
-                  )}
-                </Toggle>
-              </div>
-
-              {/* Dark Mode Toggle */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Eye size={14} className="text-muted-foreground" />
-                  <span className="text-xs">Modo Escuro</span>
-                </div>
-                <Toggle
-                  pressed={settings.contrast === 'dark'}
-                  onPressedChange={() => updateContrast(settings.contrast === 'dark' ? 'normal' : 'dark')}
-                  aria-label={`Modo escuro ${settings.contrast === 'dark' ? 'ativado' : 'desativado'}`}
-                  className="h-6 w-10 data-[state=on]:bg-primary"
-                >
-                  {settings.contrast === 'dark' ? (
-                    <ToggleRight size={12} className="text-primary-foreground" />
-                  ) : (
-                    <ToggleLeft size={12} className="text-muted-foreground" />
-                  )}
-                </Toggle>
-              </div>
-
-              {/* Reduced Motion Toggle */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Eye size={14} className="text-muted-foreground" />
-                  <span className="text-xs">Reduzir Animações</span>
-                </div>
-                <Toggle
-                  pressed={settings.reducedMotion}
-                  onPressedChange={toggleReducedMotion}
-                  aria-label={`Animações reduzidas ${settings.reducedMotion ? 'ativadas' : 'desativadas'}`}
-                  className="h-6 w-10 data-[state=on]:bg-primary"
-                >
-                  {settings.reducedMotion ? (
-                    <ToggleRight size={12} className="text-primary-foreground" />
-                  ) : (
-                    <ToggleLeft size={12} className="text-muted-foreground" />
-                  )}
-                </Toggle>
-              </div>
-
-              {/* Announcements Toggle */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Volume2 size={14} className="text-muted-foreground" />
-                  <span className="text-xs">Anúncios de Tela</span>
-                </div>
-                <Toggle
-                  pressed={settings.announcements}
-                  onPressedChange={toggleAnnouncements}
-                  aria-label={`Anúncios para leitores de tela ${settings.announcements ? 'ativados' : 'desativados'}`}
-                  className="h-6 w-10 data-[state=on]:bg-primary"
-                >
-                  {settings.announcements ? (
-                    <ToggleRight size={12} className="text-primary-foreground" />
-                  ) : (
-                    <ToggleLeft size={12} className="text-muted-foreground" />
-                  )}
-                </Toggle>
-              </div>
-
-              <Separator className="my-2" />
-
-              {/* Export Content */}
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleExportToText}
-                className="w-full justify-start gap-2 h-8 text-muted-foreground hover:text-foreground"
-                aria-label="Exportar conteúdo da página como texto"
+                onClick={() => setIsOpen(false)}
+                aria-label="Fechar painel de acessibilidade"
+                className="h-8 w-8 p-0"
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setIsOpen(false);
+                  }
+                }}
               >
-                <Download size={14} />
-                <span className="text-xs">Exportar Texto</span>
-              </Button>
-
-              {/* Reset */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleReset}
-                className="w-full justify-start gap-2 h-8 text-muted-foreground hover:text-foreground"
-              >
-                <RotateCcw size={14} />
-                <span className="text-xs">Restaurar</span>
+                ✕
               </Button>
             </div>
-          )}
-        </div>
-      </Card>
+
+            <div className="space-y-5">
+              {/* Controle de Fonte com melhor acessibilidade */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium" htmlFor="font-size-control">
+                    Tamanho da fonte
+                    <span className="sr-only">
+                      Ajusta o tamanho da fonte para melhor legibilidade. Atual: {settings.fontSize}px
+                    </span>
+                  </Label>
+                  <div className="flex items-center gap-2" role="group" aria-labelledby="font-size-control">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleFontSizeChange(false)}
+                      aria-label={`Diminuir fonte para ${Math.max(16, settings.fontSize - 2)}px`}
+                      className="h-9 w-9 p-0"
+                      disabled={settings.fontSize <= 16}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleFontSizeChange(false);
+                        }
+                      }}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm px-3 py-1 bg-muted rounded-md min-w-[4rem] text-center font-medium">
+                      {settings.fontSize}px
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleFontSizeChange(true)}
+                      aria-label={`Aumentar fonte para ${Math.min(24, settings.fontSize + 2)}px`}
+                      className="h-9 w-9 p-0"
+                      disabled={settings.fontSize >= 24}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleFontSizeChange(true);
+                        }
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                {interactions.fontSize && (
+                  <p className="text-xs text-muted-foreground">✓ Interagido</p>
+                )}
+              </div>
+
+              {/* Controle de Contraste */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">
+                    Contraste e tema
+                    <span className="sr-only">
+                      Altera entre modo normal, alto contraste e modo escuro para melhor visibilidade
+                    </span>
+                  </Label>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleContrastChange}
+                    className="flex items-center gap-2 h-9"
+                    aria-label={`Alterar contraste (atual: ${settings.contrast})`}
+                    role="switch"
+                    aria-checked={settings.contrast !== 'normal'}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleContrastChange();
+                      }
+                    }}
+                  >
+                    {settings.contrast === 'dark' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                    <span className="text-sm capitalize font-medium">
+                      {settings.contrast === 'normal' ? 'Normal' : 
+                       settings.contrast === 'high' ? 'Alto' : 'Escuro'}
+                    </span>
+                  </Button>
+                </div>
+                {interactions.contrast && (
+                  <p className="text-xs text-muted-foreground">✓ Interagido</p>
+                )}
+              </div>
+
+              {/* Controle de Animações */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">
+                    Reduzir animações
+                    <span className="sr-only">
+                      Reduz ou remove animações para evitar desconforto visual e melhorar performance
+                    </span>
+                  </Label>
+                  <Button
+                    variant={settings.reducedMotion ? "default" : "outline"}
+                    size="sm"
+                    onClick={handleReducedMotionToggle}
+                    aria-label={`${settings.reducedMotion ? 'Desativar' : 'Ativar'} redução de animações`}
+                    role="switch"
+                    aria-checked={settings.reducedMotion}
+                    className="flex items-center gap-2 h-9"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleReducedMotionToggle();
+                      }
+                    }}
+                  >
+                    {settings.reducedMotion ? <ZapOff className="h-4 w-4" /> : <Zap className="h-4 w-4" />}
+                    <span className="text-sm font-medium">{settings.reducedMotion ? 'Ativo' : 'Inativo'}</span>
+                  </Button>
+                </div>
+                {interactions.reducedMotion && (
+                  <p className="text-xs text-muted-foreground">✓ Interagido</p>
+                )}
+              </div>
+
+              {/* Controle de Anúncios */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">
+                    Anúncios de tela
+                    <span className="sr-only">
+                      Ativa feedback sonoro via leitores de tela para informar sobre mudanças na interface
+                    </span>
+                  </Label>
+                  <Button
+                    variant={settings.announcements ? "default" : "outline"}
+                    size="sm"
+                    onClick={handleAnnouncementsToggle}
+                    aria-label={`${settings.announcements ? 'Desativar' : 'Ativar'} anúncios de tela`}
+                    role="switch"
+                    aria-checked={settings.announcements}
+                    className="flex items-center gap-2 h-9"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleAnnouncementsToggle();
+                      }
+                    }}
+                  >
+                    {settings.announcements ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                    <span className="text-sm font-medium">{settings.announcements ? 'Ativo' : 'Inativo'}</span>
+                  </Button>
+                </div>
+                {interactions.announcements && (
+                  <p className="text-xs text-muted-foreground">✓ Interagido</p>
+                )}
+              </div>
+
+              {/* Progresso das interações */}
+              {!allInteracted && (
+                <div className="bg-muted/50 p-3 rounded-lg">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Para exportar, interaja com todas as opções:
+                  </p>
+                  <div className="text-xs space-y-1">
+                    <div className={interactions.fontSize ? "text-green-600" : "text-muted-foreground"}>
+                      {interactions.fontSize ? "✓" : "○"} Tamanho da fonte
+                    </div>
+                    <div className={interactions.contrast ? "text-green-600" : "text-muted-foreground"}>
+                      {interactions.contrast ? "✓" : "○"} Contraste
+                    </div>
+                    <div className={interactions.reducedMotion ? "text-green-600" : "text-muted-foreground"}>
+                      {interactions.reducedMotion ? "✓" : "○"} Animações
+                    </div>
+                    <div className={interactions.announcements ? "text-green-600" : "text-muted-foreground"}>
+                      {interactions.announcements ? "✓" : "○"} Anúncios
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Formulário de E-mail (apenas após todas interações) */}
+              {allInteracted && !isVerified && (
+                <div className="space-y-3 p-3 bg-primary/5 rounded-lg border">
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Verificação para exportar</span>
+                  </div>
+                  <form onSubmit={handleEmailSubmit} className="space-y-3">
+                    <div>
+                      <Label htmlFor="email-verification" className="text-xs">
+                        Digite seu e-mail para gerar código de verificação:
+                      </Label>
+                      <Input
+                        id="email-verification"
+                        type="email"
+                        value={emailInput}
+                        onChange={(e) => setEmailInput(e.target.value)}
+                        placeholder="seu@email.com"
+                        required
+                        disabled={isLoading}
+                        className="mt-1"
+                        aria-describedby="email-help"
+                      />
+                      <p id="email-help" className="text-xs text-muted-foreground mt-1">
+                        Usado apenas para gerar código único de verificação
+                      </p>
+                    </div>
+                    <Button 
+                      type="submit" 
+                      size="sm" 
+                      disabled={isLoading || !emailInput.trim()}
+                      className="w-full"
+                    >
+                      {isLoading ? "Gerando..." : "Gerar código"}
+                    </Button>
+                  </form>
+                  {error && (
+                    <p className="text-xs text-destructive" role="alert">
+                      {error}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Código de verificação gerado */}
+              {isVerified && (
+                <div className="space-y-3 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-sm font-medium">Verificação concluída</span>
+                  </div>
+                  <div className="space-y-2 text-xs">
+                    <p><strong>E-mail:</strong> {email}</p>
+                    <p><strong>Código:</strong> <code className="bg-background px-1 rounded">{verificationCode}</code></p>
+                  </div>
+                </div>
+              )}
+
+              {/* Botões de ação */}
+              <div className="flex gap-2 pt-3 border-t">
+                <Button
+                  variant={isVerified ? "default" : "outline"}
+                  size="sm"
+                  onClick={isVerified ? handleExportToText : toggleEmailForm}
+                  className="flex items-center gap-2 flex-1"
+                  aria-label={isVerified ? "Exportar conteúdo da página para texto" : "Iniciar processo de verificação para exportar"}
+                  disabled={!allInteracted}
+                >
+                  <Download className="h-4 w-4" />
+                  {isVerified ? "Exportar" : "Exportar"}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleReset}
+                  className="flex-1"
+                  aria-label="Resetar todas as configurações de acessibilidade"
+                >
+                  Reset
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

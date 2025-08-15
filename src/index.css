@@ -153,6 +153,9 @@ Innovative, professional, conversion-focused */
 
   body {
     @apply bg-background text-foreground font-sans;
+    /* Base font size 18px para melhor acessibilidade */
+    font-size: 18px;
+    line-height: 1.6;
   }
 
   /* Custom utility classes for BETI brand */
@@ -417,6 +420,25 @@ Innovative, professional, conversion-focused */
   outline: 2px solid hsl(var(--primary));
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* Enhanced focus for high contrast mode */
+[data-contrast="high"] *:focus-visible,
+[data-contrast="dark"] *:focus-visible {
+  @apply ring-4 ring-primary ring-offset-4;
+}
+
+/* Keyboard navigation improvements */
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="switch"]:focus-visible {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-background;
+}
+
+/* Skip links */
+.skip-link {
+  @apply absolute -top-8 left-4 z-50 bg-primary text-primary-foreground px-4 py-2 rounded;
+  @apply transform -translate-y-full focus:translate-y-0 transition-transform;
 }
 
 /* High contrast focus indicators */
