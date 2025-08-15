@@ -233,7 +233,7 @@ export const AccessibilityMenu = () => {
 
       {/* Painel expandido */}
       {isOpen && (
-        <Card className="bg-background/98 backdrop-blur-sm border shadow-xl max-w-sm animate-scale-in">
+        <Card className="bg-background border shadow-2xl max-w-sm animate-scale-in border-border/20">
           <div className="p-5">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
