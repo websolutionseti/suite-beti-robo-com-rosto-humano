@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check, Star, Zap, Crown } from "lucide-react";
 import { useInteractionTracker } from "@/hooks/useInteractionTracker";
+import PresentationButtons from "@/components/PresentationButtons";
 
 const PricingSection = () => {
   const { trackPricingInteraction } = useInteractionTracker();
@@ -130,6 +131,11 @@ const PricingSection = () => {
               </Button>
             </div>
           ))}
+        </div>
+
+        {/* Presentation Buttons */}
+        <div className="mt-16">
+          <PresentationButtons />
         </div>
 
         {/* Payment options */}
