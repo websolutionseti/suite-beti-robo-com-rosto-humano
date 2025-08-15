@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Check, Star, Zap, Crown } from "lucide-react";
+import { Check, Star, Zap, Crown, MessageCircle, ExternalLink } from "lucide-react";
 import { useInteractionTracker } from "@/hooks/useInteractionTracker";
-import PresentationButtons from "@/components/PresentationButtons";
 
 const PricingSection = () => {
   const { trackPricingInteraction } = useInteractionTracker();
@@ -119,24 +118,52 @@ const PricingSection = () => {
                 ))}
               </div>
 
-              <Button 
-                variant={plan.highlight ? "hero" : "cta"}
-                size="lg" 
-                className="w-full"
-                asChild
-              >
-                <a href={whatsappSDR} target="_blank" rel="noopener noreferrer" onClick={trackPricingInteraction}>
-                  Solicitar Apresentação
-                </a>
-              </Button>
+              {/* Presentation Button based on plan */}
+              {(() => {
+                const presentations = [
+                  {
+                    id: "mei",
+                    title: "Suíte BETI MEI",
+                    message: "Olá, gostaria de solicitar uma apresentação da Suíte BETI MEI para microempreendedores. Tenho interesse em conhecer as soluções de automação e digitalização para meu negócio."
+                  },
+                  {
+                    id: "pe", 
+                    title: "Suíte BETI PE",
+                    message: "Olá, gostaria de solicitar uma apresentação da Suíte BETI PE para pequenas empresas. Busco soluções avançadas de automação e integração para otimizar meus processos."
+                  },
+                  {
+                    id: "em",
+                    title: "Suíte BETI EM",
+                    message: "Olá, gostaria de solicitar uma apresentação da Suíte BETI EM para empresas médias. Preciso de uma solução escalável com IA, ML e suporte dedicado para minha organização."
+                  }
+                ];
+                
+                const currentPresentation = presentations[index];
+                
+                const handlePresentationClick = () => {
+                  trackPricingInteraction();
+                  const encodedMessage = encodeURIComponent(currentPresentation.message);
+                  const whatsappUrl = `https://wa.me/5512992317773?text=${encodedMessage}`;
+                  window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                };
+
+                return (
+                  <Button
+                    onClick={handlePresentationClick}
+                    variant={plan.highlight ? "hero" : "cta"}
+                    size="lg"
+                    className="w-full group-hover:scale-105 transition-transform duration-200"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Solicitar Apresentação
+                    <ExternalLink className="w-4 h-4 ml-2" />
+                  </Button>
+                );
+              })()}
             </div>
           ))}
         </div>
 
-        {/* Presentation Buttons */}
-        <div className="mt-16">
-          <PresentationButtons />
-        </div>
 
         {/* Payment options */}
         <div className="mt-16 text-center">
