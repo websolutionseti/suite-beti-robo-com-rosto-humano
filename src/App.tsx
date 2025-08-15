@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import { AccessibilityProvider } from "@/a11y";
 import SkipLink from "@/a11y/SkipLink";
 import { useColorblindSupport } from "@/hooks/useColorblindSupport";
+import { LanguageProvider } from "@/hooks/useLanguage";
 
 const AppContent = () => {
   useColorblindSupport();
@@ -36,14 +37,16 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AccessibilityProvider>
-        <TooltipProvider>
-          <SkipLink />
-          <Toaster />
-          <Sonner />
-          <AppContent />
-        </TooltipProvider>
-      </AccessibilityProvider>
+      <LanguageProvider>
+        <AccessibilityProvider>
+          <TooltipProvider>
+            <SkipLink />
+            <Toaster />
+            <Sonner />
+            <AppContent />
+          </TooltipProvider>
+        </AccessibilityProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 };

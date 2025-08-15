@@ -7,23 +7,40 @@ import CtaSection from "@/components/sections/CtaSection";
 import Footer from "@/components/sections/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { AccessibilityMenu } from "@/a11y";
+import TranslateIcon from "@/components/TranslateIcon";
+import ConditionalA11yIcon from "@/components/ConditionalA11yIcon";
+import PWAButton from "@/components/PWAButton";
+import ConditionalExport from "@/components/ConditionalExport";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
       <main id="main-content" role="main">
-        <HeroSection />
-        <ProblemSection />
-        <SolutionSection />
-        <section id="benefits">
+        <div data-section="hero">
+          <HeroSection />
+        </div>
+        <div data-section="problem">
+          <ProblemSection />
+        </div>
+        <div data-section="solution">
+          <SolutionSection />
+        </div>
+        <section id="benefits" data-section="benefits">
           <BenefitsSection />
         </section>
-        <PricingSection />
-        <CtaSection />
+        <div data-section="pricing">
+          <PricingSection />
+        </div>
+        <div data-section="cta">
+          <CtaSection />
+        </div>
       </main>
       <Footer />
       <FloatingWhatsApp />
-      <AccessibilityMenu />
+      <TranslateIcon />
+      <ConditionalA11yIcon />
+      <PWAButton />
+      <ConditionalExport />
     </div>
   );
 };
