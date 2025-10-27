@@ -1,5 +1,5 @@
 # Multi-stage build para otimizar o tamanho da imagem
-FROM node:18-alpine AS builder
+FROM node:25-alpine AS builder
 
 # Instalar dependências do sistema
 RUN apk add --no-cache libc6-compat
