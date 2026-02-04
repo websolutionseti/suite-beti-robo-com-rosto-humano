@@ -77,7 +77,8 @@ Innovative, professional, conversion-focused */
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
     --gradient-success: linear-gradient(135deg, hsl(var(--success)) 0%, hsl(var(--success-glow)) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(215 15% 98%) 100%);
+    /* Card gradient must follow theme tokens (fixes unreadable text in dark mode) */
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
 
     /* Shadows */
     --shadow-soft: 0 4px 20px -4px hsl(var(--primary) / 0.1);
@@ -136,8 +137,10 @@ Innovative, professional, conversion-focused */
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Keep BETI brand primary in dark mode (prevents light/white surfaces) */
+    --primary: 220 90% 56%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 220 100% 70%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
@@ -148,7 +151,7 @@ Innovative, professional, conversion-focused */
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 220 90% 56%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
