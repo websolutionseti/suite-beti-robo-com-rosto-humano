@@ -104,7 +104,7 @@ const HeroSection = () => {
               </div>
             </div>
             
-            <div className="absolute -bottom-4 -left-4 bg-white gradient-card p-4 rounded-lg shadow-medium animate-float" style={{
+            <div className="absolute -bottom-4 -left-4 gradient-card p-4 rounded-lg shadow-medium animate-float" style={{
             animationDelay: '4s'
           }}>
               <div className="text-sm font-medium text-foreground">
