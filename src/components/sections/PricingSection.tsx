@@ -9,7 +9,6 @@ const PricingSection = () => {
     {
       name: "MEI",
       icon: <Star className="text-primary" size={24} />,
-      price: "R$ 1.500 - R$ 5.000",
       roi: "ROI: 3-6 meses",
       description: "Ideal para microempreendedores e pequenos negócios",
       features: [
@@ -24,7 +23,6 @@ const PricingSection = () => {
     {
       name: "Pequena Empresa",
       icon: <Zap className="text-primary" size={24} />,
-      price: "R$ 5.000 - R$ 15.000",
       roi: "ROI: 2-4 meses",
       description: "Perfeito para empresas em crescimento",
       features: [
@@ -40,7 +38,6 @@ const PricingSection = () => {
     {
       name: "Empresa Média",
       icon: <Crown className="text-primary" size={24} />,
-      price: "R$ 15.000 - R$ 50.000+",
       roi: "ROI: 1-3 meses",
       description: "Solução completa para empresas consolidadas",
       features: [
@@ -103,9 +100,6 @@ const PricingSection = () => {
                 <h3 className="font-bold text-foreground mb-2">{plan.name}</h3>
                 <p className="text-muted-foreground mb-4">{plan.description}</p>
                 
-                <div className="mb-2">
-                  <span className="font-bold text-primary">{plan.price}</span>
-                </div>
                 <div className="font-medium text-success">{plan.roi}</div>
               </div>
 
