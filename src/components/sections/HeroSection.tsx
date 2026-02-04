@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, BarChart3, FileText } from "lucide-react";
-import betiHero from "@/imagem/beti-hero.jpg";
+import betiHero from "@/imagem/beti-hero.webp";
 const HeroSection = () => {
   const whatsappUrl = "https://wa.me/5512991528871?text=Ol%C3%A1%2C%20quero%20conhecer%20a%20Su%C3%ADte%20BETI%20e%20falar%20com%20o%20CCO";
   const briefingUrl = "https://websolutions.eti.br/briefing";

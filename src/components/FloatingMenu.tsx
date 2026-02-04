@@ -110,6 +110,12 @@ const FloatingMenu = () => {
       url: 'https://acelerador.websolutions.eti.br/',
       highlight: true,
     },
+    {
+      title: 'Material para PO/Gerente TI, Diretores',
+      description: 'Catálogo PDF',
+      icon: Link2,
+      url: 'https://link.online.des.br/catalogo.pdf',
+    },
   ];
 
   const handleLanguageSelect = (lang: Language) => {

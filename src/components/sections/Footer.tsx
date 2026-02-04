@@ -23,7 +23,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Mail size={16} className="text-primary-glow" />
-                <span>contato@websolutionseti.com.br</span>
+                <span>info@websolutionseti.com.br</span>
               </div>
             </div>
           </div>
