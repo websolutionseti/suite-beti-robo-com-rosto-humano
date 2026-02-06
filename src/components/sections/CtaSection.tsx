@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ArrowRight, Phone } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
+import DiagnosticoModal from "@/components/DiagnosticoModal";
 
 const CtaSection = () => {
   const whatsappCCO = "https://wa.me/5512991528871?text=Ol%C3%A1%2C%20quero%20conhecer%20mais%20sobre%20a%20Su%C3%ADte%20BETI%20e%20fechar%20neg%C3%B3cio%20com%20o%20CCO";
@@ -28,9 +29,11 @@ const CtaSection = () => {
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap mb-12">
+            <DiagnosticoModal variant="success" />
+            
             <Button 
-              variant="success" 
+              variant="outline-white" 
               size="lg"
               asChild
               className="text-lg px-8 py-4 h-auto"

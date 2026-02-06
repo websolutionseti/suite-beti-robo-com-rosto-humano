@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageCircle, BarChart3, FileText } from "lucide-react";
 import betiHero from "@/imagem/beti-hero.webp";
+import DiagnosticoModal from "@/components/DiagnosticoModal";
 const HeroSection = () => {
   const whatsappUrl = "https://wa.me/5512991528871?text=Ol%C3%A1%2C%20quero%20conhecer%20a%20Su%C3%ADte%20BETI%20e%20falar%20com%20o%20CCO";
   const briefingUrl = "https://websolutions.eti.br/briefing";
@@ -15,7 +16,7 @@ const HeroSection = () => {
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
                 Suíte BETI
-                <span className="block animate-glow text-amber-300">
+                <span className="block animate-glow text-success-glow">
                   Atendimento Inteligente
                 </span>
                 <span className="block text-lg md:text-xl font-normal text-white/90">
@@ -45,8 +46,10 @@ const HeroSection = () => {
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button variant="success" size="lg" asChild className="text-lg px-8 py-4 h-auto">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start flex-wrap">
+              <DiagnosticoModal variant="success" />
+              
+              <Button variant="outline-white" size="lg" asChild className="text-lg px-8 py-4 h-auto">
                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="mr-2" />
                   Fale com a BETI agora
