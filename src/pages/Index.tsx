@@ -9,6 +9,7 @@ import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import FloatingMenu from "@/components/FloatingMenu";
 import PWAButton from "@/components/PWAButton";
 import ConditionalExport from "@/components/ConditionalExport";
+import ExitIntentModal from "@/components/ExitIntentModal";
 
 const Index = () => {
   return (
@@ -38,6 +39,7 @@ const Index = () => {
       <FloatingMenu />
       <PWAButton />
       <ConditionalExport />
+      <ExitIntentModal />
     </div>
   );
 };
