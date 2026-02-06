@@ -2,7 +2,7 @@ import { MessageCircle, Mail, MapPin, Phone } from "lucide-react";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const whatsappUrl = "https://link.online.des.br/falecombeti";
-  return <footer className="bg-foreground text-white py-16">
+  return <footer className="bg-slate-900 dark:bg-slate-950 text-white py-16">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -78,7 +78,7 @@ const Footer = () => {
 
         {/* Bottom tagline */}
         <div className="text-center mt-8 pt-8 border-t border-white/10">
-          <p className="text-lg font-medium text-primary-glow">
+          <p className="text-lg font-medium text-emerald-400">
             "Com a BETI, você não instala um robô. Você ganha uma equipe digital."
           </p>
           <p className="text-sm text-white/60 mt-2">
