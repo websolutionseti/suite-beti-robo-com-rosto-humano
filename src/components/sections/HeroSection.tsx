@@ -45,30 +45,49 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start flex-wrap">
-              <DiagnosticoModal variant="success" />
+            {/* CTAs - Hierarquia visual clara */}
+            <div className="space-y-4">
+              {/* CTA Primário - Máximo destaque */}
+              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                <DiagnosticoModal variant="success" />
+                
+                <Button 
+                  variant="outline-white" 
+                  size="lg" 
+                  asChild 
+                  className="text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 h-auto backdrop-blur-md bg-white/15 border-white/40 hover:bg-white/25 hover:border-white/60 transition-all duration-300 shadow-lg"
+                >
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    Fale com a BETI
+                  </a>
+                </Button>
+              </div>
               
-              <Button variant="outline-white" size="lg" asChild className="text-lg px-8 py-4 h-auto">
-                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="mr-2" />
-                  Fale com a BETI agora
-                </a>
-              </Button>
-              
-              <Button variant="outline-white" size="lg" className="text-lg px-8 py-4 h-auto" onClick={() => document.getElementById('benefits')?.scrollIntoView({
-              behavior: 'smooth'
-            })}>
-                Ver como funciona
-                <ArrowRight className="ml-2" />
-              </Button>
-              
-              <Button variant="outline-white" size="lg" asChild className="text-lg px-8 py-4 h-auto">
-                <a href={briefingUrl} target="_blank" rel="noopener noreferrer">
-                  <FileText className="mr-2" />
-                  Briefing Gratuito
-                </a>
-              </Button>
+              {/* CTAs Secundários - Menor destaque, inline */}
+              <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                <Button 
+                  variant="ghost" 
+                  size="lg" 
+                  className="text-white/90 hover:text-white hover:bg-white/10 px-4 py-2 h-auto text-sm sm:text-base transition-all duration-200"
+                  onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  Ver como funciona
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="lg" 
+                  asChild 
+                  className="text-white/90 hover:text-white hover:bg-white/10 px-4 py-2 h-auto text-sm sm:text-base transition-all duration-200"
+                >
+                  <a href={briefingUrl} target="_blank" rel="noopener noreferrer">
+                    <FileText className="mr-1.5 h-4 w-4" />
+                    Briefing Gratuito
+                  </a>
+                </Button>
+              </div>
             </div>
 
             {/* Trust indicators */}
