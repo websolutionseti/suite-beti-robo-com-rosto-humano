@@ -37,7 +37,7 @@ const DiagnosticoModal = ({
         </DialogHeader>
         <div className="flex-1 p-6 pt-4 h-full">
           <iframe
-            src="https://link.online.des.br/webform-beti_acelerador"
+            src="https://link.online.des.br/webform-beti"
             width="100%"
             height="100%"
             className="border-0 rounded-lg min-h-[500px]"

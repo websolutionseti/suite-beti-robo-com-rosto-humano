@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Index from "./pages/Index";
 import Handoff from "./pages/Handoff";
+import BetiDiagnostico from "./pages/BetiDiagnostico";
+import BetiObrigado from "./pages/BetiObrigado";
 import NotFound from "./pages/NotFound";
 import { AccessibilityProvider } from "@/a11y";
 import SkipLink from "@/a11y/SkipLink";
@@ -20,6 +22,8 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/handoff02026" element={<Handoff />} />
+        <Route path="/beti-diagnostico" element={<BetiDiagnostico />} />
+        <Route path="/beti-obrigado" element={<BetiObrigado />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

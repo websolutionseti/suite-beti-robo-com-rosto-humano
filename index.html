@@ -151,5 +151,19 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Auto-close Lovable Badge
+      (function () {
+        var cloaker = setInterval(function () {
+          var badge = document.getElementById('lovable-badge');
+          var closeBtn = document.getElementById('lovable-badge-close');
+          if (badge && closeBtn) {
+            closeBtn.click();
+            clearInterval(cloaker);
+          }
+        }, 100);
+        setTimeout(function () { clearInterval(cloaker); }, 5000);
+      })();
+    </script>
   </body>
 </html>
