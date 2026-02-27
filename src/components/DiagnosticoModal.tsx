@@ -27,9 +27,37 @@ interface DiagnosticoModalProps {
   variant?: "default" | "success" | "outline" | "outline-white";
 }
 
+// Reads UTM params from the current URL
+function getUtmParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get("utm_source") || "",
+    utm_medium: params.get("utm_medium") || "",
+    utm_campaign: params.get("utm_campaign") || "",
+    utm_content: params.get("utm_content") || "",
+    utm_term: params.get("utm_term") || "",
+  };
+}
+
+// Determines which landing the user is on
+function getLanding(): "beti" | "acelerador" {
+  return window.location.hostname.includes("acelerador") ? "acelerador" : "beti";
+}
+
+// Analytics helper (dataLayer / GA4)
+function trackEvent(event: string, data?: Record<string, string>) {
+  if (typeof window !== "undefined" && (window as any).dataLayer) {
+    (window as any).dataLayer.push({ event, ...data });
+  }
+}
+
+const WEBHOOK_URL = "https://fila.online.des.br/webhook/beti_diagnostico_modal";
+const PROD_OBRIGADO = "https://beti.websolutions.eti.br/beti-obrigado";
+const STAGING_OBRIGADO = "/beti-obrigado";
+
 const DiagnosticoModal = ({
   triggerClassName = "",
-  variant = "default"
+  variant = "default",
 }: DiagnosticoModalProps) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -38,71 +66,126 @@ const DiagnosticoModal = ({
   const totalSteps = 5;
 
   const [formData, setFormData] = useState({
-    nome: "",
+    // Step 1 - Identificação
+    nome_completo: "",
     whatsapp: "",
-    site: "",
-    ramo: "",
+    site_ou_instagram: "",
+    // Step 2 - Negócio
+    ramo_atuacao: "",
     ramo_detalhe: "",
-    problema: "",
-    prejuizo: "",
-    meta: "",
-    compromisso: "",
+    tamanho_equipe: "",
+    // Step 3 - Dores
+    processo_atual: "",
+    dor_principal: "",
+    prejuizo_estimado: "",
+    // Step 4 - Metas
+    meta_6_meses: "",
+    ferramentas_atuais: "",
+    impacto_futuro: "",
+    // Step 5 - Expectativas
+    prioridade: "",
+    beneficio_esperado: "",
+    urgencia: "",
+    compromisso_guilherme: "",
   });
 
   const updateField = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const nextStep = () => setStep(prev => Math.min(prev + 1, totalSteps));
-  const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
+  const isStepValid = (): boolean => {
+    switch (step) {
+      case 1:
+        return (
+          formData.nome_completo.trim().split(" ").length >= 2 &&
+          formData.whatsapp.replace(/\D/g, "").length >= 10 &&
+          formData.site_ou_instagram.trim().length > 3
+        );
+      case 2:
+        return !!formData.ramo_atuacao && formData.ramo_detalhe.trim().length > 2 && !!formData.tamanho_equipe;
+      case 3:
+        return formData.processo_atual.trim().length > 5 && formData.dor_principal.trim().length > 5 && !!formData.prejuizo_estimado;
+      case 4:
+        return formData.meta_6_meses.trim().length > 5 && formData.ferramentas_atuais.trim().length > 2 && formData.impacto_futuro.trim().length > 5;
+      case 5:
+        return !!formData.prioridade && !!formData.beneficio_esperado && !!formData.urgencia && !!formData.compromisso_guilherme;
+      default:
+        return false;
+    }
+  };
+
+  const handleOpen = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen) {
+      setStep(1);
+      trackEvent("beti_modal_open", { landing: getLanding() });
+    }
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
-    const WEBHOOK_URL = "https://n8n.online.des.br/webhook/0efca1ca-d98f-42d3-b61e-22f97628e19f";
+    const utms = getUtmParams();
+    const landing = getLanding();
 
     const payload = {
-      "Nome Completo": formData.nome,
-      "WhatsApp": formData.whatsapp,
-      "Site ou Instagram": formData.site,
-      "Ramo de Atuação": formData.ramo,
-      "Especifique seu ramo": formData.ramo_detalhe,
-      "Qual a maior dor/gargalo?": formData.problema,
-      "Hoje qual sua estimativa de Prejuízo": formData.prejuizo,
-      "Meta para 6 meses": formData.meta,
-      "Aceita conversar com Guilherme ou quer continuar com a betié um Compromisso": formData.compromisso,
+      nome_completo: formData.nome_completo.trim(),
+      whatsapp: formData.whatsapp.replace(/\D/g, ""),
+      site_ou_instagram: formData.site_ou_instagram.trim(),
+      ramo_atuacao: formData.ramo_atuacao,
+      ramo_detalhe: formData.ramo_detalhe.trim(),
+      tamanho_equipe: formData.tamanho_equipe,
+      processo_atual: formData.processo_atual.trim(),
+      dor_principal: formData.dor_principal.trim(),
+      prejuizo_estimado: formData.prejuizo_estimado,
+      meta_6_meses: formData.meta_6_meses.trim(),
+      ferramentas_atuais: formData.ferramentas_atuais.trim(),
+      impacto_futuro: formData.impacto_futuro.trim(),
+      prioridade: formData.prioridade,
+      beneficio_esperado: formData.beneficio_esperado,
+      urgencia: formData.urgencia,
+      compromisso_guilherme: formData.compromisso_guilherme,
+      origem: {
+        landing,
+        hostname: window.location.hostname,
+        path: window.location.pathname,
+        ...utms,
+      },
     };
 
     try {
-      const response = await fetch(WEBHOOK_URL, {
+      const res = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
+      if (res.ok) {
+        trackEvent("beti_modal_submit_ok", { landing });
         setOpen(false);
-        navigate("/beti-diagnostico");
+        // Redirect: prod or staging
+        const isProd = window.location.hostname.includes("websolutions.eti.br");
+        if (isProd) {
+          window.location.href = PROD_OBRIGADO;
+        } else {
+          navigate(STAGING_OBRIGADO);
+        }
       } else {
-        throw new Error("Falha no envio");
+        throw new Error(`HTTP ${res.status}`);
       }
     } catch (err) {
-      toast.error("Erro ao enviar diagnóstico. Tente novamente.");
+      trackEvent("beti_modal_submit_erro", { landing, error: String(err) });
+      toast.error("Não conseguimos enviar agora. Tente novamente em instantes.");
     } finally {
       setLoading(false);
     }
   };
 
-  const isStepValid = () => {
-    if (step === 1) return formData.nome.length > 2 && formData.whatsapp.length >= 8;
-    if (step === 2) return formData.ramo !== "";
-    if (step === 3) return formData.problema.length > 5;
-    if (step === 4) return formData.meta.length > 5;
-    if (step === 5) return formData.compromisso !== "";
-    return true;
-  };
+  const inputCls = "bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500";
+  const textareaCls = "bg-slate-800 border-slate-700 focus:border-indigo-500 text-white placeholder:text-slate-500 min-h-[110px]";
+  const labelCls = "text-slate-300 text-sm font-medium";
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         <Button
           variant={variant}
@@ -113,170 +196,195 @@ const DiagnosticoModal = ({
           Gerar Diagnóstico
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-xl w-[95vw] bg-slate-900 border-slate-800 text-white p-6 rounded-3xl overflow-hidden shadow-2xl">
-        <DialogHeader className="mb-6">
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+
+      <DialogContent className="max-w-xl w-[95vw] bg-slate-900 border-slate-800 text-white p-6 rounded-3xl shadow-2xl overflow-y-auto max-h-[95vh]">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-2xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Diagnóstico Premium BETI
           </DialogTitle>
-          <div className="mt-4 space-y-2">
-            <div className="flex justify-between text-xs text-slate-400 mb-1">
-              <span>Passo {step} de {totalSteps}</span>
+          <div className="mt-3 space-y-1">
+            <div className="flex justify-between text-xs text-slate-400">
+              <span>Etapa {step} de {totalSteps}</span>
               <span>{Math.round((step / totalSteps) * 100)}%</span>
             </div>
             <Progress value={(step / totalSteps) * 100} className="h-1.5 bg-slate-800" />
           </div>
         </DialogHeader>
 
-        <div className="space-y-6 min-h-[350px] flex flex-col justify-center">
-          {step === 1 && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="text-xl font-bold text-indigo-400">Primeiro, quem é você?</h3>
-              <div className="space-y-2">
-                <Label htmlFor="nome" className="text-slate-300">Nome Completo</Label>
-                <Input
-                  id="nome"
-                  placeholder="Seu nome"
-                  value={formData.nome}
-                  onChange={(e) => updateField("nome", e.target.value)}
-                  className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="whatsapp" className="text-slate-300">WhatsApp (com DDD)</Label>
-                <Input
-                  id="whatsapp"
-                  placeholder="Ex: 11999998888"
-                  value={formData.whatsapp}
-                  onChange={(e) => updateField("whatsapp", e.target.value)}
-                  className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="site" className="text-slate-300">Site ou Instagram</Label>
-                <Input
-                  id="site"
-                  placeholder="Link do seu negócio"
-                  value={formData.site}
-                  onChange={(e) => updateField("site", e.target.value)}
-                  className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12"
-                />
-              </div>
+        {/* ── Step 1: Identificação ── */}
+        {step === 1 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+            <h3 className="text-xl font-bold text-indigo-400">Identificação</h3>
+            <div className="space-y-1">
+              <Label className={labelCls}>Nome Completo *</Label>
+              <Input placeholder="Ex: Maria Silva" value={formData.nome_completo} onChange={(e) => updateField("nome_completo", e.target.value)} className={inputCls} />
             </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="text-xl font-bold text-indigo-400">Sobre o seu negócio</h3>
-              <div className="space-y-2">
-                <Label className="text-slate-300">Ramo de Atuação</Label>
-                <Select value={formData.ramo} onValueChange={(v) => updateField("ramo", v)}>
-                  <SelectTrigger className="bg-slate-800 border-slate-700 h-12">
-                    <SelectValue placeholder="Selecione o ramo..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                    <SelectItem value="Serviços">Serviços</SelectItem>
-                    <SelectItem value="E-commerce">E-commerce</SelectItem>
-                    <SelectItem value="Infoproduto">Infoproduto</SelectItem>
-                    <SelectItem value="Indústria">Indústria</SelectItem>
-                    <SelectItem value="Outros">Outros</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="ramo_detalhe" className="text-slate-300">Especifique melhor</Label>
-                <Input
-                  id="ramo_detalhe"
-                  placeholder="Ex: Clínica Odontológica, Agência de Marketing..."
-                  value={formData.ramo_detalhe}
-                  onChange={(e) => updateField("ramo_detalhe", e.target.value)}
-                  className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12"
-                />
-              </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>WhatsApp (com DDD) *</Label>
+              <Input placeholder="11999998888" value={formData.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className={inputCls} />
             </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="text-xl font-bold text-indigo-400">Qual o maior desafio?</h3>
-              <div className="space-y-2">
-                <Label htmlFor="problema" className="text-slate-300">Gargalo principal no atendimento</Label>
-                <Textarea
-                  id="problema"
-                  placeholder="O que está impedindo você de escalar hoje?"
-                  value={formData.problema}
-                  onChange={(e) => updateField("problema", e.target.value)}
-                  className="bg-slate-800 border-slate-700 focus:border-indigo-500 min-h-[120px]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-slate-300">Estimativa de Prejuízo (Mensal)</Label>
-                <Select value={formData.prejuizo} onValueChange={(v) => updateField("prejuizo", v)}>
-                  <SelectTrigger className="bg-slate-800 border-slate-700 h-12">
-                    <SelectValue placeholder="Selecione uma faixa..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                    <SelectItem value="Até R$ 1.000">Até R$ 1.000</SelectItem>
-                    <SelectItem value="R$ 1k a R$ 5k">R$ 1k a R$ 5k</SelectItem>
-                    <SelectItem value="Mais de R$ 10k">Mais de R$ 10k</SelectItem>
-                    <SelectItem value="Não sei calcular">Não sei calcular</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Site ou Instagram *</Label>
+              <Input placeholder="@empresa ou https://empresa.com.br" value={formData.site_ou_instagram} onChange={(e) => updateField("site_ou_instagram", e.target.value)} className={inputCls} />
             </div>
-          )}
+          </div>
+        )}
 
-          {step === 4 && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="text-xl font-bold text-indigo-400">Visão de Futuro</h3>
-              <div className="space-y-2">
-                <Label htmlFor="meta" className="text-slate-300">Onde você quer estar daqui a 6 meses?</Label>
-                <Textarea
-                  id="meta"
-                  placeholder="Descreva sua meta de faturamento ou automação..."
-                  value={formData.meta}
-                  onChange={(e) => updateField("meta", e.target.value)}
-                  className="bg-slate-800 border-slate-700 focus:border-indigo-500 min-h-[150px]"
-                />
-              </div>
+        {/* ── Step 2: Negócio ── */}
+        {step === 2 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+            <h3 className="text-xl font-bold text-indigo-400">Sobre o Negócio</h3>
+            <div className="space-y-1">
+              <Label className={labelCls}>Ramo de Atuação *</Label>
+              <Select value={formData.ramo_atuacao} onValueChange={(v) => updateField("ramo_atuacao", v)}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 h-12"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectItem value="Serviços">Serviços</SelectItem>
+                  <SelectItem value="E-commerce">E-commerce</SelectItem>
+                  <SelectItem value="Infoproduto">Infoproduto</SelectItem>
+                  <SelectItem value="Saúde">Saúde</SelectItem>
+                  <SelectItem value="Educação">Educação</SelectItem>
+                  <SelectItem value="Indústria">Indústria</SelectItem>
+                  <SelectItem value="Outros">Outros</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          )}
-
-          {step === 5 && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="text-xl font-bold text-indigo-400">Compromisso Final</h3>
-              <p className="text-sm text-slate-400 leading-relaxed bg-indigo-500/10 p-4 rounded-xl border border-indigo-500/20">
-                15 minutos com um especialista podem economizar 6 meses de erros. Você aceita uma consultoria com nosso CTO Guilherme ou prefere apenas o PDF da Beti?
-              </p>
-              <div className="space-y-2">
-                <Select value={formData.compromisso} onValueChange={(v) => updateField("compromisso", v)}>
-                  <SelectTrigger className="bg-slate-800 border-slate-700 h-12">
-                    <SelectValue placeholder="Qual sua preferência?" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                    <SelectItem value="Quero falar com Guilherme">Sim! Quero falar com Guilherme</SelectItem>
-                    <SelectItem value="Continuar com a Beti">Prefiro continuar apenas com a Beti</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Especifique seu ramo *</Label>
+              <Input placeholder="Ex: Clínica Odontológica, Agência de Marketing..." value={formData.ramo_detalhe} onChange={(e) => updateField("ramo_detalhe", e.target.value)} className={inputCls} />
             </div>
-          )}
-        </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Tamanho da Equipe *</Label>
+              <Select value={formData.tamanho_equipe} onValueChange={(v) => updateField("tamanho_equipe", v)}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 h-12"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectItem value="Somente eu">Somente eu</SelectItem>
+                  <SelectItem value="2-5 pessoas">2-5 pessoas</SelectItem>
+                  <SelectItem value="6-15 pessoas">6-15 pessoas</SelectItem>
+                  <SelectItem value="16-50 pessoas">16-50 pessoas</SelectItem>
+                  <SelectItem value="+50 pessoas">+50 pessoas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
 
-        <div className="mt-8 flex justify-between gap-4">
+        {/* ── Step 3: Dores ── */}
+        {step === 3 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+            <h3 className="text-xl font-bold text-indigo-400">Situação Atual</h3>
+            <div className="space-y-1">
+              <Label className={labelCls}>Como funciona seu atendimento hoje? *</Label>
+              <Textarea placeholder="Descreva seu processo atual..." value={formData.processo_atual} onChange={(e) => updateField("processo_atual", e.target.value)} className={textareaCls} />
+            </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Maior dor/gargalo no atendimento *</Label>
+              <Textarea placeholder="O que mais te impede de escalar?" value={formData.dor_principal} onChange={(e) => updateField("dor_principal", e.target.value)} className={textareaCls} />
+            </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Estimativa de prejuízo mensal *</Label>
+              <Select value={formData.prejuizo_estimado} onValueChange={(v) => updateField("prejuizo_estimado", v)}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 h-12"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectItem value="Até R$ 1.000">Até R$ 1.000</SelectItem>
+                  <SelectItem value="R$ 1k a R$ 5k">R$ 1k a R$ 5k</SelectItem>
+                  <SelectItem value="R$ 5k a R$ 10k">R$ 5k a R$ 10k</SelectItem>
+                  <SelectItem value="Mais de R$ 10k">Mais de R$ 10k</SelectItem>
+                  <SelectItem value="Não sei calcular">Não sei calcular</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 4: Metas ── */}
+        {step === 4 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+            <h3 className="text-xl font-bold text-indigo-400">Visão de Futuro</h3>
+            <div className="space-y-1">
+              <Label className={labelCls}>Meta para os próximos 6 meses *</Label>
+              <Textarea placeholder="Ex: Automatizar 80% do atendimento e dobrar conversões..." value={formData.meta_6_meses} onChange={(e) => updateField("meta_6_meses", e.target.value)} className={textareaCls} />
+            </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Ferramentas que usa hoje *</Label>
+              <Input placeholder="Ex: WhatsApp, Planilhas, CRM..." value={formData.ferramentas_atuais} onChange={(e) => updateField("ferramentas_atuais", e.target.value)} className={inputCls} />
+            </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Impacto se resolver isso *</Label>
+              <Textarea placeholder="O que muda no seu negócio se esse problema for resolvido?" value={formData.impacto_futuro} onChange={(e) => updateField("impacto_futuro", e.target.value)} className={textareaCls} />
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 5: Expectativas ── */}
+        {step === 5 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+            <h3 className="text-xl font-bold text-indigo-400">Expectativas</h3>
+            <div className="space-y-1">
+              <Label className={labelCls}>Sua prioridade agora *</Label>
+              <Select value={formData.prioridade} onValueChange={(v) => updateField("prioridade", v)}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 h-12"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectItem value="Reduzir custo operacional">Reduzir custo operacional</SelectItem>
+                  <SelectItem value="Aumentar vendas">Aumentar vendas</SelectItem>
+                  <SelectItem value="Melhorar atendimento">Melhorar atendimento</SelectItem>
+                  <SelectItem value="Automatizar processos">Automatizar processos</SelectItem>
+                  <SelectItem value="Escalar sem contratar">Escalar sem contratar</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Principal benefício esperado *</Label>
+              <Select value={formData.beneficio_esperado} onValueChange={(v) => updateField("beneficio_esperado", v)}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 h-12"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectItem value="Mais tempo livre">Mais tempo livre</SelectItem>
+                  <SelectItem value="Mais receita">Mais receita</SelectItem>
+                  <SelectItem value="Menos erros operacionais">Menos erros operacionais</SelectItem>
+                  <SelectItem value="Clientes mais satisfeitos">Clientes mais satisfeitos</SelectItem>
+                  <SelectItem value="Competitividade">Competitividade</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className={labelCls}>Urgência para resolver *</Label>
+              <Select value={formData.urgencia} onValueChange={(v) => updateField("urgencia", v)}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 h-12"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectItem value="Urgente (este mês)">Urgente (este mês)</SelectItem>
+                  <SelectItem value="Em breve (trimestre)">Em breve (trimestre)</SelectItem>
+                  <SelectItem value="Sem prazo definido">Sem prazo definido</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1 bg-indigo-500/10 p-4 rounded-xl border border-indigo-500/20">
+              <Label className="text-indigo-300 text-sm font-medium">Aceita uma consultoria de 15min com Guilherme (CTO)? *</Label>
+              <Select value={formData.compromisso_guilherme} onValueChange={(v) => updateField("compromisso_guilherme", v)}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 h-12 mt-2"><SelectValue placeholder="Escolha..." /></SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                  <SelectItem value="Sim, quero falar com Guilherme">Sim! Quero falar com Guilherme</SelectItem>
+                  <SelectItem value="Prefiro continuar com a Beti">Prefiro apenas o diagnóstico da Beti</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation buttons */}
+        <div className="mt-6 flex gap-3">
           {step > 1 && (
             <Button
               variant="outline"
-              onClick={prevStep}
+              onClick={() => setStep((s) => s - 1)}
               className="flex-1 bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 h-12 rounded-xl"
             >
               <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
             </Button>
           )}
-
           <Button
-            onClick={step === totalSteps ? handleSubmit : nextStep}
+            onClick={step === totalSteps ? handleSubmit : () => setStep((s) => s + 1)}
             disabled={!isStepValid() || loading}
-            className={`flex-1 ${step === 1 ? 'w-full' : ''} bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95`}
+            className={`${step === 1 ? "w-full" : "flex-2"} flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95`}
           >
             {loading ? (
               <Loader2 className="animate-spin h-5 w-5" />
@@ -287,6 +395,10 @@ const DiagnosticoModal = ({
             )}
           </Button>
         </div>
+
+        <p className="mt-3 text-center text-[10px] text-slate-500">
+          Seus dados são protegidos e usados apenas para o diagnóstico.
+        </p>
       </DialogContent>
     </Dialog>
   );
