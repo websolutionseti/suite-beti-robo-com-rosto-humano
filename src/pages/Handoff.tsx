@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import etiLogo from "@/assets/eti-logo.png";
+import { AccessibilityMenu } from "@/a11y/AccessibilityMenu";
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
@@ -1086,6 +1087,7 @@ const Handoff = () => {
           </p>
         </footer>
       </main>
+      <AccessibilityMenu />
     </div>
   );
 };
