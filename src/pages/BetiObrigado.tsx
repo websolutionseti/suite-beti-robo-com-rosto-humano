@@ -9,9 +9,7 @@ const BetiObrigado = () => {
   }, []);
 
   const handleWhatsApp = () => {
-    const phone = "5511999998888"; // Mock do zap do Guilherme
-    const text = encodeURIComponent("Olá Guilherme! Acabei de gerar meu diagnóstico na Beti e quero conversar sobre minha consultoria.");
-    window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
+    window.open("https://api.whatsapp.com/send/?phone=5512991528871&text=Ol%C3%A1+Guilherme%21+Acabei+de+gerar+meu+diagn%C3%B3stico+na+Beti+e+quero+conversar+sobre+minha+consultoria.&type=phone_number&app_absent=0", "_blank");
   };
 
   return (
