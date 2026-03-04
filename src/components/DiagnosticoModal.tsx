@@ -22,6 +22,29 @@ import {
 import { ClipboardCheck, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+// ── Input sanitization helpers ──
+const MAX_TEXT_LENGTH = 500;
+const MAX_SHORT_LENGTH = 100;
+const MAX_PHONE_LENGTH = 15;
+
+/** Strip HTML tags and trim to prevent XSS via text fields */
+function sanitizeText(input: string, maxLength = MAX_TEXT_LENGTH): string {
+  return input
+    .replace(/<[^>]*>/g, "")       // strip HTML tags
+    .replace(/[<>]/g, "")          // strip remaining angle brackets
+    .trim()
+    .slice(0, maxLength);
+}
+
+/** Enforce digits-only for phone numbers */
+function sanitizePhone(input: string): string {
+  return input.replace(/\D/g, "").slice(0, MAX_PHONE_LENGTH);
+}
+
+/** Simple client-side rate limiter – blocks rapid re-submissions */
+let lastSubmitTime = 0;
+const RATE_LIMIT_MS = 5000; // 5 seconds between submissions
+
 interface DiagnosticoModalProps {
   triggerClassName?: string;
   variant?: "default" | "success" | "outline" | "outline-white";
@@ -123,31 +146,40 @@ const DiagnosticoModal = ({
   };
 
   const handleSubmit = async () => {
+    // Rate limiting
+    const now = Date.now();
+    if (now - lastSubmitTime < RATE_LIMIT_MS) {
+      toast.error("Aguarde alguns segundos antes de enviar novamente.");
+      return;
+    }
+    lastSubmitTime = now;
+
     setLoading(true);
     const utms = getUtmParams();
     const landing = getLanding();
 
+    // Sanitize all inputs before sending to webhook
     const payload = {
-      nome_completo: formData.nome_completo.trim(),
-      whatsapp: formData.whatsapp.replace(/\D/g, ""),
-      site_ou_instagram: formData.site_ou_instagram.trim(),
-      ramo_atuacao: formData.ramo_atuacao,
-      ramo_detalhe: formData.ramo_detalhe.trim(),
-      tamanho_equipe: formData.tamanho_equipe,
-      processo_atual: formData.processo_atual.trim(),
-      dor_principal: formData.dor_principal.trim(),
-      prejuizo_estimado: formData.prejuizo_estimado,
-      meta_6_meses: formData.meta_6_meses.trim(),
-      ferramentas_atuais: formData.ferramentas_atuais.trim(),
-      impacto_futuro: formData.impacto_futuro.trim(),
-      prioridade: formData.prioridade,
-      beneficio_esperado: formData.beneficio_esperado,
-      urgencia: formData.urgencia,
-      compromisso_guilherme: formData.compromisso_guilherme,
+      nome_completo: sanitizeText(formData.nome_completo, MAX_SHORT_LENGTH),
+      whatsapp: sanitizePhone(formData.whatsapp),
+      site_ou_instagram: sanitizeText(formData.site_ou_instagram, MAX_SHORT_LENGTH),
+      ramo_atuacao: sanitizeText(formData.ramo_atuacao, MAX_SHORT_LENGTH),
+      ramo_detalhe: sanitizeText(formData.ramo_detalhe, MAX_SHORT_LENGTH),
+      tamanho_equipe: sanitizeText(formData.tamanho_equipe, MAX_SHORT_LENGTH),
+      processo_atual: sanitizeText(formData.processo_atual),
+      dor_principal: sanitizeText(formData.dor_principal),
+      prejuizo_estimado: sanitizeText(formData.prejuizo_estimado, MAX_SHORT_LENGTH),
+      meta_6_meses: sanitizeText(formData.meta_6_meses),
+      ferramentas_atuais: sanitizeText(formData.ferramentas_atuais, MAX_SHORT_LENGTH),
+      impacto_futuro: sanitizeText(formData.impacto_futuro),
+      prioridade: sanitizeText(formData.prioridade, MAX_SHORT_LENGTH),
+      beneficio_esperado: sanitizeText(formData.beneficio_esperado, MAX_SHORT_LENGTH),
+      urgencia: sanitizeText(formData.urgencia, MAX_SHORT_LENGTH),
+      compromisso_guilherme: sanitizeText(formData.compromisso_guilherme, MAX_SHORT_LENGTH),
       origem: {
         landing,
-        hostname: window.location.hostname,
-        path: window.location.pathname,
+        hostname: sanitizeText(window.location.hostname, MAX_SHORT_LENGTH),
+        path: sanitizeText(window.location.pathname, MAX_SHORT_LENGTH),
         ...utms,
       },
     };
@@ -224,15 +256,15 @@ const DiagnosticoModal = ({
             <h3 className="text-xl font-bold text-indigo-400">Identificação</h3>
             <div className="space-y-1">
               <Label className={labelCls}>Nome Completo *</Label>
-              <Input placeholder="Ex: Maria Silva" value={formData.nome_completo} onChange={(e) => updateField("nome_completo", e.target.value)} className={inputCls} />
+              <Input placeholder="Ex: Maria Silva" value={formData.nome_completo} onChange={(e) => updateField("nome_completo", e.target.value)} className={inputCls} maxLength={MAX_SHORT_LENGTH} />
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>WhatsApp (com DDD) *</Label>
-              <Input placeholder="11999998888" value={formData.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className={inputCls} />
+              <Input placeholder="11999998888" value={formData.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className={inputCls} maxLength={MAX_PHONE_LENGTH} />
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>Site ou Instagram *</Label>
-              <Input placeholder="@empresa ou https://empresa.com.br" value={formData.site_ou_instagram} onChange={(e) => updateField("site_ou_instagram", e.target.value)} className={inputCls} />
+              <Input placeholder="@empresa ou https://empresa.com.br" value={formData.site_ou_instagram} onChange={(e) => updateField("site_ou_instagram", e.target.value)} className={inputCls} maxLength={MAX_SHORT_LENGTH} />
             </div>
           </div>
         )}
@@ -258,7 +290,7 @@ const DiagnosticoModal = ({
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>Especifique seu ramo *</Label>
-              <Input placeholder="Ex: Clínica Odontológica, Agência de Marketing..." value={formData.ramo_detalhe} onChange={(e) => updateField("ramo_detalhe", e.target.value)} className={inputCls} />
+              <Input placeholder="Ex: Clínica Odontológica, Agência de Marketing..." value={formData.ramo_detalhe} onChange={(e) => updateField("ramo_detalhe", e.target.value)} className={inputCls} maxLength={MAX_SHORT_LENGTH} />
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>Tamanho da Equipe *</Label>
@@ -282,11 +314,11 @@ const DiagnosticoModal = ({
             <h3 className="text-xl font-bold text-indigo-400">Situação Atual</h3>
             <div className="space-y-1">
               <Label className={labelCls}>Como funciona seu atendimento hoje? *</Label>
-              <Textarea placeholder="Descreva seu processo atual..." value={formData.processo_atual} onChange={(e) => updateField("processo_atual", e.target.value)} className={textareaCls} />
+              <Textarea placeholder="Descreva seu processo atual..." value={formData.processo_atual} onChange={(e) => updateField("processo_atual", e.target.value)} className={textareaCls} maxLength={MAX_TEXT_LENGTH} />
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>Maior dor/gargalo no atendimento *</Label>
-              <Textarea placeholder="O que mais te impede de escalar?" value={formData.dor_principal} onChange={(e) => updateField("dor_principal", e.target.value)} className={textareaCls} />
+              <Textarea placeholder="O que mais te impede de escalar?" value={formData.dor_principal} onChange={(e) => updateField("dor_principal", e.target.value)} className={textareaCls} maxLength={MAX_TEXT_LENGTH} />
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>Estimativa de prejuízo mensal *</Label>
@@ -310,15 +342,15 @@ const DiagnosticoModal = ({
             <h3 className="text-xl font-bold text-indigo-400">Visão de Futuro</h3>
             <div className="space-y-1">
               <Label className={labelCls}>Meta para os próximos 6 meses *</Label>
-              <Textarea placeholder="Ex: Automatizar 80% do atendimento e dobrar conversões..." value={formData.meta_6_meses} onChange={(e) => updateField("meta_6_meses", e.target.value)} className={textareaCls} />
+              <Textarea placeholder="Ex: Automatizar 80% do atendimento e dobrar conversões..." value={formData.meta_6_meses} onChange={(e) => updateField("meta_6_meses", e.target.value)} className={textareaCls} maxLength={MAX_TEXT_LENGTH} />
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>Ferramentas que usa hoje *</Label>
-              <Input placeholder="Ex: WhatsApp, Planilhas, CRM..." value={formData.ferramentas_atuais} onChange={(e) => updateField("ferramentas_atuais", e.target.value)} className={inputCls} />
+              <Input placeholder="Ex: WhatsApp, Planilhas, CRM..." value={formData.ferramentas_atuais} onChange={(e) => updateField("ferramentas_atuais", e.target.value)} className={inputCls} maxLength={MAX_SHORT_LENGTH} />
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>Impacto se resolver isso *</Label>
-              <Textarea placeholder="O que muda no seu negócio se esse problema for resolvido?" value={formData.impacto_futuro} onChange={(e) => updateField("impacto_futuro", e.target.value)} className={textareaCls} />
+              <Textarea placeholder="O que muda no seu negócio se esse problema for resolvido?" value={formData.impacto_futuro} onChange={(e) => updateField("impacto_futuro", e.target.value)} className={textareaCls} maxLength={MAX_TEXT_LENGTH} />
             </div>
           </div>
         )}
