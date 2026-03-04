@@ -401,8 +401,8 @@ const DiagnosticoModal = ({
               <Select value={formData.compromisso_guilherme} onValueChange={(v) => updateField("compromisso_guilherme", v)}>
                 <SelectTrigger className="bg-slate-800 border-slate-700 h-12 mt-2"><SelectValue placeholder="Escolha..." /></SelectTrigger>
                 <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                  <SelectItem value="Sim, quero falar com Guilherme">Sim! Quero falar com Guilherme</SelectItem>
-                  <SelectItem value="Prefiro continuar com a Beti">Prefiro apenas o diagnóstico da Beti</SelectItem>
+                  <SelectItem value="Sim! Quero falar com Guilherme">Sim! Quero falar com Guilherme</SelectItem>
+                  <SelectItem value="Prefiro apenas o diagnóstico da Beti">Prefiro apenas o diagnóstico da Beti</SelectItem>
                 </SelectContent>
               </Select>
             </div>
