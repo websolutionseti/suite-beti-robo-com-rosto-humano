@@ -162,6 +162,13 @@ const DiagnosticoModal = ({
       if (res.ok) {
         trackEvent("beti_modal_submit_ok", { landing });
         setOpen(false);
+
+        // Save to localStorage for the "Obrigado" page to pre-fill
+        localStorage.setItem("@beti_lead", JSON.stringify({
+          nome: payload.nome_completo,
+          whatsapp: payload.whatsapp
+        }));
+
         // Redirect: prod or staging
         const isProd = window.location.hostname.includes("websolutions.eti.br");
         if (isProd) {
@@ -197,7 +204,7 @@ const DiagnosticoModal = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-xl w-[95vw] bg-slate-900 border-slate-800 text-white p-6 rounded-3xl shadow-2xl overflow-y-auto max-h-[95vh]">
+      <DialogContent aria-describedby={undefined} className="max-w-xl w-[95vw] bg-slate-900 border-slate-800 text-white p-6 rounded-3xl shadow-2xl overflow-y-auto max-h-[95vh]">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-2xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Diagnóstico Premium BETI
