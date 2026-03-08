@@ -42,6 +42,24 @@ const BetiObrigado = () => {
     );
   };
 
+  const handleCtoWhatsApp = () => {
+    window.open(
+      `https://api.whatsapp.com/send/?phone=${CTO_WA_PHONE}&text=${encodeURIComponent(CTO_WA_MSG)}&type=phone_number&app_absent=0`,
+      "_blank"
+    );
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+    setUserPhone(digits);
+  };
+
+  const formatPhone = (digits: string) => {
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+  };
+
   const handleDownloadSubmit = () => {
     if (!userEmail) {
       toast.error("Por favor, informe seu e-mail.");
