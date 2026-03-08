@@ -114,6 +114,16 @@ const BetiObrigado = () => {
             <Download className="mr-2 w-5 h-5 flex-shrink-0 group-hover:text-indigo-400 transition-colors" />
             Baixar Relatório Base (PDF)
           </Button>
+
+          {/* Tertiary: Falar com Especialista (CTO Guilherme) */}
+          <Button
+            onClick={handleCtoWhatsApp}
+            variant="outline"
+            className="w-full h-14 bg-transparent border-emerald-700/50 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 font-semibold text-sm sm:text-base rounded-2xl transition-all hover:-translate-y-0.5 group"
+          >
+            <MessageCircle className="mr-2 w-5 h-5 flex-shrink-0 group-hover:text-emerald-300 transition-colors" />
+            Falar com Especialista Agora
+          </Button>
         </div>
 
         <p className="mt-8 text-slate-500 text-xs text-center border-t border-white/5 pt-6">
