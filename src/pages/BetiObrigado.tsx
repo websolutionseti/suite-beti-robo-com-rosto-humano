@@ -149,7 +149,19 @@ const BetiObrigado = () => {
             </div>
             <div className="space-y-1">
               <Label className="text-slate-300 text-sm font-medium">WhatsApp</Label>
-              <Input value={userPhone} onChange={(e) => setUserPhone(e.target.value)} className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500" />
+              <Input
+                value={formatPhone(userPhone)}
+                onChange={handlePhoneChange}
+                onKeyDown={(e) => {
+                  const allowed = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'];
+                  if (allowed.includes(e.key)) return;
+                  if (!/\d/.test(e.key)) e.preventDefault();
+                }}
+                placeholder="(12) 99999-8888"
+                inputMode="numeric"
+                type="tel"
+                className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500"
+              />
             </div>
             <div className="space-y-1">
               <Label className="text-slate-300 text-sm font-medium">E-mail corporativo</Label>
