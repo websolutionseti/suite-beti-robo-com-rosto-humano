@@ -236,7 +236,7 @@ const DiagnosticoModal = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent aria-describedby={undefined} className="max-w-xl w-[95vw] bg-slate-900 border-slate-800 text-white p-6 rounded-3xl shadow-2xl overflow-y-auto max-h-[95vh]">
+      <DialogContent aria-describedby={undefined} className="max-w-xl w-[95vw] bg-slate-900 border-slate-800 text-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] box-border">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-2xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Diagnóstico Premium BETI
@@ -396,8 +396,8 @@ const DiagnosticoModal = ({
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1 bg-indigo-500/10 p-4 rounded-xl border border-indigo-500/20">
-              <Label className="text-indigo-300 text-sm font-medium">Aceita uma consultoria de 15min com Guilherme (CTO)? *</Label>
+            <div className="space-y-1 bg-indigo-500/10 p-3 sm:p-4 rounded-xl border border-indigo-500/20">
+              <Label className="text-indigo-300 text-xs sm:text-sm font-medium">Aceita consultoria de 15min com Guilherme (CTO)? *</Label>
               <Select value={formData.compromisso_guilherme} onValueChange={(v) => updateField("compromisso_guilherme", v)}>
                 <SelectTrigger className="bg-slate-800 border-slate-700 h-12 mt-2"><SelectValue placeholder="Escolha..." /></SelectTrigger>
                 <SelectContent className="bg-slate-800 border-slate-700 text-white">
@@ -410,12 +410,12 @@ const DiagnosticoModal = ({
         )}
 
         {/* Navigation buttons */}
-        <div className="mt-6 flex gap-3">
+        <div className="mt-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
           {step > 1 && (
             <Button
               variant="outline"
               onClick={() => setStep((s) => s - 1)}
-              className="flex-1 bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 h-12 rounded-xl"
+              className="sm:flex-1 bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 h-11 sm:h-12 rounded-xl order-2 sm:order-1"
             >
               <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
             </Button>
@@ -423,12 +423,12 @@ const DiagnosticoModal = ({
           <Button
             onClick={step === totalSteps ? handleSubmit : () => setStep((s) => s + 1)}
             disabled={!isStepValid() || loading}
-            className={`${step === 1 ? "w-full" : "flex-2"} flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95`}
+            className="w-full sm:flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-11 sm:h-12 rounded-xl shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95 text-sm sm:text-base order-1 sm:order-2"
           >
             {loading ? (
               <Loader2 className="animate-spin h-5 w-5" />
             ) : step === totalSteps ? (
-              "Gerar Diagnóstico Premium"
+              "Gerar Diagnóstico"
             ) : (
               <>Próximo <ArrowRight className="ml-2 h-4 w-4" /></>
             )}
