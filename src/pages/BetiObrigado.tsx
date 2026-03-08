@@ -1,6 +1,6 @@
 import { AccessibilityMenu } from "@/a11y/AccessibilityMenu";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Download, ArrowRight, Bot, Sparkles } from "lucide-react";
+import { CheckCircle2, Download, ArrowRight, Bot, Sparkles, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Dialog,
