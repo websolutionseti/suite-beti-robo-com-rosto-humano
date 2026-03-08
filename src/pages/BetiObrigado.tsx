@@ -1,6 +1,6 @@
 import { AccessibilityMenu } from "@/a11y/AccessibilityMenu";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Download, ArrowRight, Bot, Sparkles } from "lucide-react";
+import { CheckCircle2, Download, ArrowRight, Bot, Sparkles, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -14,6 +14,8 @@ import { toast } from "sonner";
 
 const UPSELL_WA_MSG = "Olá Beti! Acabei de receber meu diagnóstico base, mas quero uma análise personalizada e profunda para minha empresa.";
 const UPSELL_WA_PHONE = "5512992317773";
+const CTO_WA_PHONE = "5512991528871";
+const CTO_WA_MSG = "Olá, acabei de gerar meu diagnóstico BETI e gostaria de falar com o especialista sobre consultoria.";
 
 const BetiObrigado = () => {
   const [userName, setUserName] = useState("");
@@ -38,6 +40,24 @@ const BetiObrigado = () => {
       `https://api.whatsapp.com/send/?phone=${UPSELL_WA_PHONE}&text=${encodeURIComponent(UPSELL_WA_MSG)}&type=phone_number&app_absent=0`,
       "_blank"
     );
+  };
+
+  const handleCtoWhatsApp = () => {
+    window.open(
+      `https://api.whatsapp.com/send/?phone=${CTO_WA_PHONE}&text=${encodeURIComponent(CTO_WA_MSG)}&type=phone_number&app_absent=0`,
+      "_blank"
+    );
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+    setUserPhone(digits);
+  };
+
+  const formatPhone = (digits: string) => {
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
   };
 
   const handleDownloadSubmit = () => {
@@ -94,6 +114,16 @@ const BetiObrigado = () => {
             <Download className="mr-2 w-5 h-5 flex-shrink-0 group-hover:text-indigo-400 transition-colors" />
             Baixar Relatório Base (PDF)
           </Button>
+
+          {/* Tertiary: Falar com Especialista (CTO Guilherme) */}
+          <Button
+            onClick={handleCtoWhatsApp}
+            variant="outline"
+            className="w-full h-14 bg-transparent border-emerald-700/50 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 font-semibold text-sm sm:text-base rounded-2xl transition-all hover:-translate-y-0.5 group"
+          >
+            <MessageCircle className="mr-2 w-5 h-5 flex-shrink-0 group-hover:text-emerald-300 transition-colors" />
+            Falar com Especialista Agora
+          </Button>
         </div>
 
         <p className="mt-8 text-slate-500 text-xs text-center border-t border-white/5 pt-6">
@@ -119,7 +149,19 @@ const BetiObrigado = () => {
             </div>
             <div className="space-y-1">
               <Label className="text-slate-300 text-sm font-medium">WhatsApp</Label>
-              <Input value={userPhone} onChange={(e) => setUserPhone(e.target.value)} className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500" />
+              <Input
+                value={formatPhone(userPhone)}
+                onChange={handlePhoneChange}
+                onKeyDown={(e) => {
+                  const allowed = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'];
+                  if (allowed.includes(e.key)) return;
+                  if (!/\d/.test(e.key)) e.preventDefault();
+                }}
+                placeholder="(12) 99999-8888"
+                inputMode="numeric"
+                type="tel"
+                className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500"
+              />
             </div>
             <div className="space-y-1">
               <Label className="text-slate-300 text-sm font-medium">E-mail corporativo</Label>
