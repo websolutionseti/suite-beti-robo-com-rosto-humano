@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Handoff from "./pages/Handoff";
 import BetiDiagnostico from "./pages/BetiDiagnostico";
 import BetiObrigado from "./pages/BetiObrigado";
+import DiagnosticoInline from "./pages/DiagnosticoInline";
 import NotFound from "./pages/NotFound";
 import { AccessibilityProvider } from "@/a11y";
 import SkipLink from "@/a11y/SkipLink";
@@ -24,6 +25,7 @@ const AppContent = () => {
         <Route path="/handoff02026" element={<Handoff />} />
         <Route path="/beti-diagnostico" element={<BetiDiagnostico />} />
         <Route path="/beti-obrigado" element={<BetiObrigado />} />
+        <Route path="/diagnostico" element={<DiagnosticoInline />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
