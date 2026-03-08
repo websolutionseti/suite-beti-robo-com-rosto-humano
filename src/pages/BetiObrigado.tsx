@@ -1,6 +1,6 @@
 import { AccessibilityMenu } from "@/a11y/AccessibilityMenu";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, MessageSquare, Mail, Download, ArrowRight, Bot, User } from "lucide-react";
+import { CheckCircle2, Download, ArrowRight, Bot, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -12,6 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+const UPSELL_WA_MSG = "Olá Beti! Acabei de receber meu diagnóstico base, mas quero uma análise personalizada e profunda para minha empresa.";
+const UPSELL_WA_PHONE = "5512992317773";
+
 const BetiObrigado = () => {
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState("");
@@ -20,22 +23,21 @@ const BetiObrigado = () => {
 
   useEffect(() => {
     document.title = "Diagnóstico Gerado com Sucesso | BETI";
-
-    // Recupera dados salvos
     const saved = localStorage.getItem("@beti_lead");
     if (saved) {
       try {
         const lead = JSON.parse(saved);
         if (lead.nome) setUserName(lead.nome);
         if (lead.whatsapp) setUserPhone(lead.whatsapp);
-      } catch (e) { }
+      } catch {}
     }
   }, []);
 
-  const handleWhatsApp = (target: "beti" | "guilherme") => {
-    const text = `Olá ${target === "beti" ? "Beti" : "Guilherme"}! Acabei de gerar meu diagnóstico na Beti e quero conversar sobre minha consultoria.`;
-    const phone = target === "beti" ? "5512992317773" : "5512991528871";
-    window.open(`https://api.whatsapp.com/send/?phone=${phone}&text=${encodeURIComponent(text)}&type=phone_number&app_absent=0`, "_blank");
+  const handleUpsellWhatsApp = () => {
+    window.open(
+      `https://api.whatsapp.com/send/?phone=${UPSELL_WA_PHONE}&text=${encodeURIComponent(UPSELL_WA_MSG)}&type=phone_number&app_absent=0`,
+      "_blank"
+    );
   };
 
   const handleDownloadSubmit = () => {
@@ -50,80 +52,56 @@ const BetiObrigado = () => {
   return (
     <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4">
       <div className="text-center max-w-xl w-full p-8 md:p-12 bg-white/[0.02] backdrop-blur-2xl rounded-[3rem] border border-white/10 shadow-2xl relative overflow-hidden">
-
-        {/* Efeito de brilho no fundo */}
+        {/* Glow */}
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-600/10 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-emerald-600/10 rounded-full blur-[80px]" />
 
-        {/* Icon de Sucesso */}
-        <div className="mx-auto mb-8 w-20 h-20 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 flex items-center justify-center">
+        {/* Success icon */}
+        <div className="mx-auto mb-6 w-20 h-20 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 flex items-center justify-center">
           <CheckCircle2 className="text-emerald-500 w-10 h-10" />
         </div>
 
-        <h1 className="text-4xl font-black mb-6 bg-gradient-to-r from-indigo-300 via-purple-200 to-white bg-clip-text text-transparent leading-tight">
-          Tudo Pronto!
+        <h1 className="text-3xl sm:text-4xl font-black mb-4 bg-gradient-to-r from-indigo-300 via-purple-200 to-white bg-clip-text text-transparent leading-tight">
+          Seu diagnóstico técnico base acaba de ser liberado! 🎯
         </h1>
 
-        <p className="text-slate-300 text-lg leading-relaxed mb-8">
-          Sua análise foi concluída com sucesso. Eu (<strong className="text-indigo-400">Beti</strong>) já preparei seu relatório personalizado.
+        <p className="text-slate-300 text-base leading-relaxed mb-4">
+          Nossa Inteligência Artificial gerou uma <strong className="text-indigo-400">leitura preliminar em PDF</strong> da sua operação com base nas informações recebidas.
+        </p>
+        <p className="text-slate-400 text-sm leading-relaxed mb-8">
+          Para resultados de alta performance, solicite uma <strong className="text-white">análise profunda e personalizada</strong> com a nossa IA avançada.
         </p>
 
-        <div className="bg-white/[0.03] rounded-2xl p-6 border border-white/5 mb-10 text-left">
-          <p className="text-slate-400 text-sm flex items-center gap-3">
-            <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-            Onde você quer receber seu diagnóstico completo?
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <button
-              onClick={() => setDownloadOpen(true)}
-              className="flex flex-row md:flex-col items-center justify-center gap-3 md:gap-2 p-4 md:p-3 bg-white/[0.02] rounded-xl border border-white/5 text-slate-400 hover:text-white hover:bg-white/5 hover:scale-105 hover:border-indigo-500/50 transition-all cursor-pointer group"
-            >
-              <Download className="w-6 h-6 group-hover:text-indigo-400 transition-colors" />
-              <span className="text-xs md:text-[10px] uppercase font-bold tracking-wider">Download</span>
-            </button>
-            <button
-              onClick={() => handleWhatsApp('beti')}
-              className="flex flex-row md:flex-col items-center justify-center gap-3 md:gap-2 p-4 md:p-3 bg-white/[0.02] rounded-xl border border-white/5 text-slate-400 hover:text-white hover:bg-emerald-500/10 hover:scale-105 hover:border-emerald-500/50 transition-all cursor-pointer group"
-            >
-              <MessageSquare className="w-6 h-6 group-hover:text-emerald-400 transition-colors" />
-              <span className="text-xs md:text-[10px] uppercase font-bold tracking-wider">WhatsApp</span>
-            </button>
-            <button
-              onClick={() => setDownloadOpen(true)}
-              className="flex flex-row md:flex-col items-center justify-center gap-3 md:gap-2 p-4 md:p-3 bg-white/[0.02] rounded-xl border border-white/5 text-slate-400 hover:text-white hover:bg-purple-500/10 hover:scale-105 hover:border-purple-500/50 transition-all cursor-pointer group"
-            >
-              <Mail className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
-              <span className="text-xs md:text-[10px] uppercase font-bold tracking-wider">E-mail</span>
-            </button>
-          </div>
-        </div>
-
+        {/* CTA Buttons */}
         <div className="space-y-4">
+          {/* Primary: Upsell Beti IA */}
           <Button
-            onClick={() => handleWhatsApp('guilherme')}
-            className="w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-2xl shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-1 group"
+            onClick={handleUpsellWhatsApp}
+            className="w-full h-16 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 hover:from-emerald-500 hover:via-teal-500 hover:to-indigo-600 text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg shadow-emerald-500/30 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/40 group relative overflow-hidden"
           >
-            <User className="mr-2 w-5 h-5 flex-shrink-0" />
-            Falar com Guilherme (Humano)
-            <ArrowRight className="ml-auto w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <span className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Sparkles className="mr-2 w-5 h-5 flex-shrink-0 animate-pulse" />
+            Aprofunde meu Diagnóstico com a Beti (IA)
+            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
 
+          {/* Secondary: Download PDF */}
           <Button
-            onClick={() => handleWhatsApp('beti')}
+            onClick={() => setDownloadOpen(true)}
             variant="outline"
-            className="w-full h-16 bg-transparent border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-200 font-bold text-lg rounded-2xl transition-all hover:-translate-y-1 group"
+            className="w-full h-14 bg-transparent border-slate-600 text-slate-300 hover:bg-white/5 hover:text-white font-semibold text-sm sm:text-base rounded-2xl transition-all hover:-translate-y-0.5 group"
           >
-            <Bot className="mr-2 w-5 h-5 flex-shrink-0" />
-            Falar com a Beti (IA)
-            <ArrowRight className="ml-auto w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <Download className="mr-2 w-5 h-5 flex-shrink-0 group-hover:text-indigo-400 transition-colors" />
+            Baixar Relatório Base (PDF)
           </Button>
         </div>
 
         <p className="mt-8 text-slate-500 text-xs text-center border-t border-white/5 pt-6">
-          © 2024 Web Solutions ETI - Todos os direitos reservados.
+          © 2024 Web Solutions ETI — Todos os direitos reservados.
         </p>
       </div>
 
-      {/* Modal de Download (Email/Telefone) */}
+      {/* Download Modal */}
       <Dialog open={isDownloadOpen} onOpenChange={setDownloadOpen}>
         <DialogContent aria-describedby={undefined} className="max-w-md w-[95vw] bg-slate-900 border-slate-800 text-white p-6 rounded-3xl shadow-2xl">
           <DialogHeader className="mb-4">
@@ -136,35 +114,18 @@ const BetiObrigado = () => {
               Confirme seus dados para receber o link seguro de download do seu relatório.
             </p>
             <div className="space-y-1">
-              <Label className="text-slate-300 text-sm font-medium">Nome (Identificado)</Label>
-              <Input
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500"
-              />
+              <Label className="text-slate-300 text-sm font-medium">Nome</Label>
+              <Input value={userName} onChange={(e) => setUserName(e.target.value)} className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500" />
             </div>
             <div className="space-y-1">
               <Label className="text-slate-300 text-sm font-medium">WhatsApp</Label>
-              <Input
-                value={userPhone}
-                onChange={(e) => setUserPhone(e.target.value)}
-                className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500"
-              />
+              <Input value={userPhone} onChange={(e) => setUserPhone(e.target.value)} className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500" />
             </div>
             <div className="space-y-1">
               <Label className="text-slate-300 text-sm font-medium">E-mail corporativo</Label>
-              <Input
-                placeholder="Ex: joao@empresa.com.br"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500"
-              />
+              <Input placeholder="Ex: joao@empresa.com.br" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} className="bg-slate-800 border-slate-700 focus:border-indigo-500 h-12 text-white placeholder:text-slate-500" />
             </div>
-
-            <Button
-              onClick={handleDownloadSubmit}
-              className="w-full h-12 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all"
-            >
+            <Button onClick={handleDownloadSubmit} className="w-full h-12 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all">
               Confirmar e Receber PDF
             </Button>
           </div>
