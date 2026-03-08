@@ -381,10 +381,16 @@ const DiagnosticoInline = () => {
                   placeholder="(11) 99999-8888"
                   value={formatPhone(formData.whatsapp)}
                   onChange={handlePhoneChange}
+                  onKeyDown={(e) => {
+                    const allowed = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'];
+                    if (allowed.includes(e.key)) return;
+                    if (!/\d/.test(e.key)) e.preventDefault();
+                  }}
                   onBlur={() => markTouched("whatsapp")}
                   className={inputCls("whatsapp")}
                   maxLength={16}
                   inputMode="numeric"
+                  type="tel"
                 />
                 <FieldError show={!!touched.whatsapp && !validations.whatsapp.valid} message={validations.whatsapp.message} />
               </div>

@@ -14,6 +14,8 @@ import { toast } from "sonner";
 
 const UPSELL_WA_MSG = "Olá Beti! Acabei de receber meu diagnóstico base, mas quero uma análise personalizada e profunda para minha empresa.";
 const UPSELL_WA_PHONE = "5512992317773";
+const CTO_WA_PHONE = "5512991528871";
+const CTO_WA_MSG = "Olá, acabei de gerar meu diagnóstico BETI e gostaria de falar com o especialista sobre consultoria.";
 
 const BetiObrigado = () => {
   const [userName, setUserName] = useState("");
