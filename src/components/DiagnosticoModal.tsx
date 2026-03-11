@@ -459,7 +459,7 @@ const DiagnosticoModal = ({
             {loading ? (
               <Loader2 className="animate-spin h-5 w-5" />
             ) : step === totalSteps ? (
-              "Gerar Diagnóstico"
+              "Gerar Diagnóstico Premium"
             ) : (
               <>Próximo <ArrowRight className="ml-2 h-4 w-4" /></>
             )}
