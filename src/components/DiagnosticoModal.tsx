@@ -75,7 +75,6 @@ function trackEvent(event: string, data?: Record<string, string>) {
 }
 
 const WEBHOOK_URL = "https://fila.online.des.br/webhook/beti_diagnostico_modal";
-const PROD_DIAGNOSTICO = "https://beti.websolutions.eti.br/beti-diagnostico";
 const STAGING_DIAGNOSTICO = "/beti-diagnostico";
 
 /** Generate verification code: "beti" + YYMMDD + first 6 alphanumeric chars from phone */
@@ -213,6 +212,14 @@ const DiagnosticoModal = ({
       });
 
       if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+
+        if (data && data.success === true) {
+          toast.success(data.message || "Diagnóstico iniciado! A Beti enviará o link no seu WhatsApp.");
+        } else {
+          toast.success("Diagnóstico iniciado! A Beti enviará o link no seu WhatsApp.");
+        }
+
         trackEvent("beti_modal_submit_ok", { landing });
         setOpen(false);
 
@@ -223,11 +230,10 @@ const DiagnosticoModal = ({
           analista,
         }));
 
-        toast.success("Diagnóstico enviado com sucesso!");
         setTimeout(() => {
           const isProd = window.location.hostname.includes("websolutions.eti.br");
           if (isProd) {
-            window.location.href = PROD_DIAGNOSTICO;
+            window.location.href = `https://${window.location.hostname}/beti-diagnostico`;
           } else {
             navigate(STAGING_DIAGNOSTICO);
           }
@@ -452,7 +458,7 @@ const DiagnosticoModal = ({
             {loading ? (
               <Loader2 className="animate-spin h-5 w-5" />
             ) : step === totalSteps ? (
-              "Gerar Diagnóstico"
+              "Gerar Diagnóstico Premium"
             ) : (
               <>Próximo <ArrowRight className="ml-2 h-4 w-4" /></>
             )}
