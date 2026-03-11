@@ -74,8 +74,18 @@ function trackEvent(event: string, data?: Record<string, string>) {
 }
 
 const WEBHOOK_URL = "https://fila.online.des.br/webhook/beti_diagnostico_modal";
-const PROD_OBRIGADO = "https://beti.websolutions.eti.br/beti-obrigado";
-const STAGING_OBRIGADO = "/beti-obrigado";
+const PROD_DIAGNOSTICO = "https://beti.websolutions.eti.br/beti-diagnostico";
+const STAGING_DIAGNOSTICO = "/beti-diagnostico";
+
+function generateCodigoVerificacao(phone: string): string {
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const dateStr = `${yy}${mm}${dd}`;
+  const alphaNum = phone.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 6);
+  return `beti${dateStr}${alphaNum}`;
+}
 
 const EXIT_INTENT_WA = "https://api.whatsapp.com/message/ODGRXMJLE5DVA1";
 
@@ -268,11 +278,21 @@ const DiagnosticoInline = () => {
       },
     };
 
+    const codigo_verificacao = generateCodigoVerificacao(payload.whatsapp);
+    const origem_detectada = "beti_pagina_diagnostico";
+    const analista = formData.compromisso_guilherme.toLowerCase().includes("guilherme") ? "guilherme" : "beti";
+
+    const fullPayload = {
+      ...payload,
+      codigo_verificacao,
+      origem_detectada,
+    };
+
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(fullPayload),
       });
 
       if (res.ok) {
@@ -280,14 +300,19 @@ const DiagnosticoInline = () => {
         localStorage.setItem("@beti_lead", JSON.stringify({
           nome: payload.nome_completo,
           whatsapp: payload.whatsapp,
+          codigo_verificacao,
+          analista,
         }));
 
-        const isProd = window.location.hostname.includes("websolutions.eti.br");
-        if (isProd) {
-          window.location.href = PROD_OBRIGADO;
-        } else {
-          navigate(STAGING_OBRIGADO);
-        }
+        toast.success("Diagnóstico enviado com sucesso!");
+        setTimeout(() => {
+          const isProd = window.location.hostname.includes("websolutions.eti.br");
+          if (isProd) {
+            window.location.href = PROD_DIAGNOSTICO;
+          } else {
+            navigate(STAGING_DIAGNOSTICO);
+          }
+        }, 1500);
       } else {
         throw new Error(`HTTP ${res.status}`);
       }
