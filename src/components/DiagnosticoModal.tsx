@@ -75,7 +75,6 @@ function trackEvent(event: string, data?: Record<string, string>) {
 }
 
 const WEBHOOK_URL = "https://fila.online.des.br/webhook/beti_diagnostico_modal";
-const PROD_DIAGNOSTICO = "https://beti.websolutions.eti.br/beti-diagnostico";
 const STAGING_DIAGNOSTICO = "/beti-diagnostico";
 
 /** Generate verification code: "beti" + YYMMDD + first 6 alphanumeric chars from phone */
