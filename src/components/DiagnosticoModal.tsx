@@ -75,8 +75,19 @@ function trackEvent(event: string, data?: Record<string, string>) {
 }
 
 const WEBHOOK_URL = "https://fila.online.des.br/webhook/beti_diagnostico_modal";
-const PROD_OBRIGADO = "https://beti.websolutions.eti.br/beti-obrigado";
-const STAGING_OBRIGADO = "/beti-obrigado";
+const PROD_DIAGNOSTICO = "https://beti.websolutions.eti.br/beti-diagnostico";
+const STAGING_DIAGNOSTICO = "/beti-diagnostico";
+
+/** Generate verification code: "beti" + YYMMDD + first 6 alphanumeric chars from phone */
+function generateCodigoVerificacao(phone: string): string {
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const dateStr = `${yy}${mm}${dd}`;
+  const alphaNum = phone.replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 6);
+  return `beti${dateStr}${alphaNum}`;
+}
 
 const DiagnosticoModal = ({
   triggerClassName = "",
