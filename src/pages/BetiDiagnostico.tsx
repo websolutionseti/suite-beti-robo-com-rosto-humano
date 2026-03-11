@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AccessibilityMenu } from "@/a11y/AccessibilityMenu";
-import { Loader2, ShieldCheck, Cpu } from "lucide-react";
+import { ShieldCheck, Cpu } from "lucide-react";
 
 const BetiDiagnostico = () => {
+  const navigate = useNavigate();
   const [dots, setDots] = useState(".");
 
   useEffect(() => {
-    // SEO dinâmico via JS (já que não temos Helmet)
     document.title = "Processando seu Diagnóstico | BETI";
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute("content", "Aguarde enquanto a BETI analisa seus dados e gera seu diagnóstico de maturidade digital exclusivo.");
@@ -14,8 +15,16 @@ const BetiDiagnostico = () => {
     const interval = setInterval(() => {
       setDots((prev) => (prev.length >= 3 ? "." : prev + "."));
     }, 500);
-    return () => clearInterval(interval);
-  }, []);
+
+    const timeout = setTimeout(() => {
+      navigate("/beti-obrigado");
+    }, 3500);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 selection:bg-indigo-500/30">

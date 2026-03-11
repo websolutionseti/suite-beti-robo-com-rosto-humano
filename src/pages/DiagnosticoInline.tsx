@@ -278,11 +278,21 @@ const DiagnosticoInline = () => {
       },
     };
 
+    const codigo_verificacao = generateCodigoVerificacao(payload.whatsapp);
+    const origem_detectada = "beti_pagina_diagnostico";
+    const analista = formData.compromisso_guilherme.toLowerCase().includes("guilherme") ? "guilherme" : "beti";
+
+    const fullPayload = {
+      ...payload,
+      codigo_verificacao,
+      origem_detectada,
+    };
+
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(fullPayload),
       });
 
       if (res.ok) {
@@ -290,14 +300,19 @@ const DiagnosticoInline = () => {
         localStorage.setItem("@beti_lead", JSON.stringify({
           nome: payload.nome_completo,
           whatsapp: payload.whatsapp,
+          codigo_verificacao,
+          analista,
         }));
 
-        const isProd = window.location.hostname.includes("websolutions.eti.br");
-        if (isProd) {
-          window.location.href = PROD_OBRIGADO;
-        } else {
-          navigate(STAGING_OBRIGADO);
-        }
+        toast.success("Diagnóstico enviado com sucesso!");
+        setTimeout(() => {
+          const isProd = window.location.hostname.includes("websolutions.eti.br");
+          if (isProd) {
+            window.location.href = PROD_DIAGNOSTICO;
+          } else {
+            navigate(STAGING_DIAGNOSTICO);
+          }
+        }, 1500);
       } else {
         throw new Error(`HTTP ${res.status}`);
       }
