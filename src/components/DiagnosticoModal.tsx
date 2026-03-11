@@ -213,6 +213,14 @@ const DiagnosticoModal = ({
       });
 
       if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+
+        if (data && data.success === true) {
+          toast.success(data.message || "Diagnóstico iniciado! A Beti enviará o link no seu WhatsApp.");
+        } else {
+          toast.success("Diagnóstico iniciado! A Beti enviará o link no seu WhatsApp.");
+        }
+
         trackEvent("beti_modal_submit_ok", { landing });
         setOpen(false);
 
@@ -223,11 +231,10 @@ const DiagnosticoModal = ({
           analista,
         }));
 
-        toast.success("Diagnóstico enviado com sucesso!");
         setTimeout(() => {
           const isProd = window.location.hostname.includes("websolutions.eti.br");
           if (isProd) {
-            window.location.href = PROD_DIAGNOSTICO;
+            window.location.href = `https://${window.location.hostname}/beti-diagnostico`;
           } else {
             navigate(STAGING_DIAGNOSTICO);
           }
